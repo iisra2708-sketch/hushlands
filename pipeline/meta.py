@@ -42,7 +42,7 @@ Every Hushlands soundscape is designed and synthesized from scratch, layer by la
 ⏱ Chapters
 {chr(10).join(chapters)}
 
-🔔 Subscribe to Hushlands for a new quiet place every week.
+🔔 Subscribe to Hushlands — new quiet places every week.
 
 {hashtags}"""
     return {

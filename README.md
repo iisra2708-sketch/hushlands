@@ -1,6 +1,6 @@
 # Hushlands
 
-Automated production pipeline for the **Hushlands** ambience YouTube channel — a new quiet place every week.
+Automated production pipeline for the **Hushlands** ambience YouTube channel — new quiet places every week.
 
 Every soundscape is synthesized from scratch (no stock loops) and paired with a seamless animated artwork loop.
 
