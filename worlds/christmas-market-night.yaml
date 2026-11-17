@@ -1,0 +1,25 @@
+order: 7
+title: Snowy Christmas Market After Closing
+primary: Snowfall, Distant Church Bells & Footsteps
+hours: 3
+season: christmas
+hook: The stalls have closed and the crowds have gone home, but the lights are still on. Snow settles on the wooden roofs, a brazier glows by the fountain, and somewhere across the old town the church bells ring out over the empty square.
+sounds:
+  - Soft winter wind over the empty square
+  - Church bells ringing across the old town
+  - Footsteps crunching through fresh snow
+  - A small brazier crackling nearby
+thumb_lines: [CHRISTMAS MARKET, snowy night, bells • snowfall]
+tags: [christmas market ambience, christmas village ambience, snowy night ambience, christmas ambience, church bells, winter night sounds, christmas sleep sounds]
+hashtags: [christmasmarket, snowynight, christmasambience]
+image_prompt: "Empty European Christmas market square at night after closing, wooden market stalls with glowing string lights and pine garlands, gently falling snow, cobblestones covered in fresh snow, old church tower in the background, a glowing iron brazier, painterly cinematic digital illustration, magical and quiet, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: wind, strength: 0.35, gain_db: -4}
+  - {type: noise, color: brown, lowpass: 300, gain_db: -14}
+  - {type: bells, freq: 247, distance: 0.75, every: 270, gain_db: -17}
+  - {type: steps, every: 140, gain_db: -5}
+  - {type: fire, gain_db: -17}
+visual:
+  snow: {density: 260}
+  glow: [{x: 0.37, y: 0.74, radius: 0.1, color: [255, 140, 50], strength: 0.35}]
+  twinkle: {count: 90, size: 6, strength: 0.6}

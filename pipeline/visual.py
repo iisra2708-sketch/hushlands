@@ -56,7 +56,7 @@ def _vignette(strength=0.35):
 
 
 class Effects:
-    def __init__(self, cfg: dict, T: float, seed: int):
+    def __init__(self, cfg: dict, T: float, seed: int, base: np.ndarray | None = None):
         self.cfg, self.T = cfg, T
         rng = np.random.default_rng(seed)
         self.rng = rng
@@ -82,15 +82,38 @@ class Effects:
                 k=rng.integers(1, 3, n), sw=rng.uniform(10, 40, n), m=rng.integers(1, 4, n),
                 ph=rng.uniform(0, 2 * np.pi, n), rad=rng.uniform(1.2, 3.4, n), span=span,
                 drift=s.get("drift", 1),
+                region=s.get("region"),  # [x0, y0, x1, y1] fractions: only draw flakes there (e.g. a window)
             )
         self.glows = []
         for g in cfg.get("glow", []):  # flickering warm light (fire, lamp, candle, window)
             yy, xx = np.mgrid[0:H, 0:W]
             cx, cy, rad = g["x"] * W, g["y"] * H, g.get("radius", 0.25) * W
             mask = np.exp(-(((xx - cx) ** 2 + (yy - cy) ** 2) / (2 * rad**2))).astype(np.float32)
-            harm = [(int(nn), rng.uniform(0, 2 * np.pi), rng.uniform(0.3, 1)) for nn in rng.integers(5, 40, 6)]
+            c_lo, c_hi = g.get("cycles", [5, 40])  # flicker speed: cycles per loop (low = slow pulse)
+            harm = [(int(nn), rng.uniform(0, 2 * np.pi), rng.uniform(0.3, 1)) for nn in rng.integers(c_lo, c_hi + 1, 6)]
             col = np.array(g.get("color", [255, 150, 60]), np.float32) / 255
             self.glows.append((mask[..., None], harm, col, g.get("strength", 0.25)))
+        self.twinkles = []
+        tw = cfg.get("twinkle")
+        if tw and base is not None:  # fairy lights: shimmer the brightest warm points of the artwork
+            lum = base[..., 0] * 0.3 + base[..., 1] * 0.59 + base[..., 2] * 0.11
+            warm = base[..., 0] - base[..., 2]
+            score = lum + 0.5 * np.clip(warm, 0, None) if tw.get("warm", True) else lum
+            x0, y0, x1, y1 = tw.get("region", [0, 0, 1, 1])
+            mask = np.zeros_like(score, bool)
+            mask[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)] = True
+            thr = np.percentile(score[mask], tw.get("percentile", 99.3))
+            ys, xs = np.nonzero(mask & (score >= thr))
+            n = min(int(tw.get("count", 70)), len(xs))
+            pick = rng.choice(len(xs), n, replace=False) if n else []
+            r = int(tw.get("size", 7))
+            yy, xx = np.mgrid[-3 * r:3 * r + 1, -3 * r:3 * r + 1]
+            sprite = np.exp(-(xx**2 + yy**2) / (2 * r**2)).astype(np.float32)[..., None]
+            col = np.array(tw.get("color", [255, 214, 150]), np.float32)
+            for i in pick:
+                self.twinkles.append((int(xs[i]), int(ys[i]), int(rng.integers(1, 4)), rng.uniform(0, 2 * np.pi),
+                                      rng.uniform(0.5, 1.0) * tw.get("strength", 0.8)))
+            self.tw_sprite, self.tw_col, self.tw_r = sprite, col, 3 * r
         self.breathe = cfg.get("breathe", 0.03)
         self.vig = _vignette(cfg.get("vignette", 0.35))
 
@@ -100,6 +123,15 @@ class Effects:
         for mask, harm, col, st in self.glows:
             f = sum(a * np.sin(2 * np.pi * n * t / T + p) for n, p, a in harm) / len(harm)
             img = img + mask * col * (st * (0.6 + 0.4 * f)) * 255 * 0.5
+        if self.twinkles:
+            R = self.tw_r
+            for x, y, k, ph, a in self.twinkles:
+                v = max(0.0, np.sin(2 * np.pi * k * t / T + ph)) ** 2 * a
+                if v < 0.02:
+                    continue
+                ya, yb, xa, xb = max(y - R, 0), min(y + R + 1, H), max(x - R, 0), min(x + R + 1, W)
+                sp = self.tw_sprite[ya - (y - R):yb - (y - R), xa - (x - R):xb - (x - R)]
+                img[ya:yb, xa:xb] += sp * self.tw_col * v
         img = img * self.vig
         im = Image.fromarray(img.clip(0, 255).astype(np.uint8))
         if hasattr(self, "rain") or hasattr(self, "snow"):
@@ -116,7 +148,11 @@ class Effects:
                 s = self.snow
                 y = (s["y0"] + s["k"] * s["span"] * t / T) % s["span"] - 20
                 x = (s["x0"] + s["sw"] * np.sin(2 * np.pi * s["m"] * t / T + s["ph"]) + s["drift"] * s["k"] * 0) % W
-                for i in range(len(y)):
+                idx = range(len(y))
+                if s["region"]:
+                    x0, y0, x1, y1 = s["region"]
+                    idx = np.nonzero((x >= x0 * W) & (x <= x1 * W) & (y >= y0 * H) & (y <= y1 * H))[0]
+                for i in idx:
                     rr = s["rad"][i]
                     d.ellipse([x[i] - rr, y[i] - rr, x[i] + rr, y[i] + rr], fill=(240, 245, 255, 190))
             ov = ov.filter(ImageFilter.GaussianBlur(0.6))
@@ -126,8 +162,8 @@ class Effects:
 
 def render_loop(base: Image.Image, cfg: dict, out_path: str, T: float = 12.0, seed: int = 1, crf: int = 27,
                 maxrate_k: int = 1500, log=print):
-    fx = Effects(cfg, T, seed)
     b = np.asarray(base, dtype=np.float32)
+    fx = Effects(cfg, T, seed, b)
     n = int(T * FPS)
     cmd = [
         "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
@@ -161,6 +197,12 @@ def thumbnail(base: Image.Image, lines: list[str], badge: str, out_path: str, ac
     arr = np.asarray(im, dtype=np.float32)
     yy, xx = np.mgrid[0:720, 0:1280]
     shade = np.clip(1 - (xx / 1280) * 1.2, 0, 1) * 0.65  # darken left side for text
+    # soft dark band behind the text block -> legible on busy artwork
+    d_ = ImageDraw.Draw(band := Image.new("L", (1280, 720), 0))
+    widths = [ImageDraw.Draw(im).textlength(l, font=_font(sz)) for l, sz in zip(lines[:3], (92, 64, 48))]
+    d_.rounded_rectangle([20, 170, min(1260, 64 + max(widths) + 60), 470], radius=40, fill=255)
+    band = np.asarray(band.filter(ImageFilter.GaussianBlur(45)), np.float32) / 255 * 0.55
+    shade = 1 - (1 - shade) * (1 - band)
     arr = arr * (1 - shade[..., None])
     im = Image.fromarray(arr.clip(0, 255).astype(np.uint8))
     d = ImageDraw.Draw(im)
@@ -168,7 +210,8 @@ def thumbnail(base: Image.Image, lines: list[str], badge: str, out_path: str, ac
     for i, line in enumerate(lines[:3]):
         size = 92 if i == 0 else (64 if i == 1 else 48)
         f = _font(size)
-        d.text((64 + 3, y + 3), line, font=f, fill=(0, 0, 0))
+        for ox, oy in ((3, 3), (2, 2), (-1, 1), (1, -1)):
+            d.text((64 + ox, y + oy), line, font=f, fill=(0, 0, 0))
         d.text((64, y), line, font=f, fill=(255, 255, 255) if i == 0 else accent)
         y += size + 18
     fb = _font(44)

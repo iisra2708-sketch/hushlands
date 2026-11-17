@@ -1,0 +1,24 @@
+order: 10
+title: Christmas Train Through the Snowy Mountains
+primary: Train Sounds, Distant Whistle & Snowfall
+hours: 3
+season: christmas
+hook: The vintage sleeper car is decorated with garlands and the lamps are turned down low. Outside, snowy mountain villages slide past in the dark. The wheels keep their slow rhythm, and now and then the old engine calls out across the valley.
+sounds:
+  - Slow rhythm of wheels on the rails
+  - Warm hum of the carriage
+  - Distant steam whistle echoing through the valley
+  - Snowy wind against the windows
+thumb_lines: [CHRISTMAS TRAIN, snowy mountains, train • whistle]
+tags: [christmas train ambience, train sounds for sleep, snowy train ride, winter train ambience, christmas ambience, sleeper train ambience, christmas sleep sounds]
+hashtags: [christmastrain, trainsounds, christmasambience]
+image_prompt: "Interior of a vintage wooden sleeper train carriage at night decorated for Christmas with pine garlands and small warm lights, warm brass lamp, velvet seats with a blanket, large window showing snowy mountains and a small lit village passing by under falling snow, painterly cinematic digital illustration, cozy and nostalgic, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: train, period: 1.45, gain_db: -5}
+  - {type: drone, tones: [48, 96, 144], gain_db: -9}
+  - {type: wind, strength: 0.4, gain_db: -10}
+  - {type: whistle, freq: 392, every: 300, gain_db: -21}
+visual:
+  snow: {density: 220, region: [0.45, 0.15, 0.96, 0.77]}
+  twinkle: {count: 50, size: 5, strength: 0.6}
+  glow: [{x: 0.33, y: 0.31, radius: 0.08, color: [255, 190, 110], strength: 0.2}]

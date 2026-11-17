@@ -1,0 +1,25 @@
+order: 13
+title: Quiet New Year's Eve in a Snowy City
+primary: Ticking Clock, Distant Bells & Snowfall
+hours: 3
+season: christmas
+hook: The party is somewhere else tonight. Up here, in a quiet apartment above the old city, snow is falling on the rooftops, the clock is counting down the last hours of the year, and the cathedral bells will ring out at midnight.
+sounds:
+  - Old mantel clock ticking
+  - Muffled hum of the city below
+  - Cathedral bells ringing in the distance
+  - Snowy wind against the window
+thumb_lines: [NEW YEAR'S EVE, snowy city, clock • distant bells]
+tags: [new years eve ambience, snowy city ambience, winter night ambience, ticking clock sounds, cozy apartment ambience, new year ambience, sleep sounds]
+hashtags: [newyearseve, snowycity, cozyambience]
+image_prompt: "Cozy apartment window seat at night on New Year's Eve, cushions and a blanket, candles and a small vintage mantel clock on the windowsill, large window overlooking snowy old city rooftops and a cathedral tower with warm lit windows, gently falling snow, painterly cinematic digital illustration, calm and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: noise, color: brown, lowpass: 260, gain_db: -6}
+  - {type: drone, tones: [60, 120], gain_db: -16}
+  - {type: clock, period: 0.5, gain_db: -8}
+  - {type: bells, freq: 196, ratios: [1.0, 0.89, 0.75, 0.67], distance: 0.85, every: 360, strikes: [8, 16], gain_db: -18}
+  - {type: wind, strength: 0.3, gain_db: -12}
+visual:
+  snow: {density: 260, region: [0.39, 0.0, 0.99, 0.55]}
+  glow: [{x: 0.79, y: 0.58, radius: 0.08, color: [255, 180, 90], strength: 0.25}]
+  twinkle: {count: 70, size: 5, strength: 0.6}

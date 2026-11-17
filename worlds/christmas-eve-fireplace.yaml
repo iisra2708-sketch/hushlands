@@ -1,0 +1,22 @@
+order: 6
+title: Christmas Eve by the Fireplace
+primary: Crackling Fire & Ticking Clock Sounds
+hours: 3
+season: christmas
+hook: The presents are wrapped, the house is asleep, and snow is drifting past the window. Only the fire is still awake — crackling softly under the stockings while the old clock counts the hours until Christmas morning.
+sounds:
+  - Crackling fireplace with soft popping embers
+  - Old pendulum clock ticking in the hallway
+  - Gentle winter wind outside the window
+thumb_lines: [CHRISTMAS EVE, by the fireplace, fire crackle • clock]
+tags: [christmas fireplace, christmas ambience, cozy christmas ambience, christmas eve ambience, crackling fireplace, fireplace sounds, christmas sleep sounds]
+hashtags: [christmasambience, fireplace, cozychristmas]
+image_prompt: "Cozy living room on Christmas Eve at night, stone fireplace with a gentle fire, three knitted stockings hanging on the mantel, decorated Christmas tree with warm fairy lights and wrapped presents, armchair with plaid blanket, frosted window showing falling snow, painterly cinematic digital illustration, warm and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: fire, gain_db: 0}
+  - {type: clock, period: 1.0, gain_db: -7}
+  - {type: wind, strength: 0.3, gain_db: -16}
+visual:
+  twinkle: {count: 80, size: 6, strength: 0.7}
+  snow: {density: 260, region: [0.82, 0.03, 0.99, 0.6]}
+  glow: [{x: 0.29, y: 0.58, radius: 0.16, color: [255, 140, 50], strength: 0.35}]

@@ -362,20 +362,28 @@ class Waves(Layer):
 
 
 class Brook(Layer):
+    """Running water. Defaults = mountain brook; with low `bubble` range and a quiet
+    `base` it becomes a simmering pot / kettle."""
+
     def setup(self):
-        self.base = bp(1200, 5500)
+        p = self.p
+        self.base = bp(*p.get("base", (1200, 5500)))
+        self.base_gain = p.get("base_gain", 0.6)
         self.gurgle = Smooth(self.seed + 1, 9, 0.4, 1.0)
+        self.rate = p.get("bubble_rate", 25)
+        self.bub_gain = p.get("bubble_gain", 0.12)
         rng = self.rng
         kernels = []
-        for f0 in rng.uniform(350, 1100, 10):
+        lo, hi = p.get("bubble", (350, 1100))
+        for f0 in rng.uniform(lo, hi, 10):
             tt = np.arange(int(0.04 * SR)) / SR
             f = f0 * (1 + 2.5 * tt / 0.04)
             kernels.append(np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt / 0.01))
         self.bubbles = ImpulseBank(rng, kernels)
 
     def render(self, n, t):
-        b = self.base(self.noise(n)) * self.gurgle(t) * 0.6
-        return b + self.bubbles(n, 25, 0.1, 1.0) * 0.12
+        b = self.base(self.noise(n)) * self.gurgle(t) * self.base_gain
+        return b + self.bubbles(n, self.rate * self.gurgle(t), 0.1, 1.0) * self.bub_gain
 
 
 class Drone(Layer):
@@ -454,6 +462,331 @@ class Ping(Layer):
         return out[:, :n] * 0.3
 
 
+# --------------------------------------------------------------------------- event layers (s3)
+def reverb_kernel(rng, seconds=3.0, decay=0.8, lp_hz=3000.0) -> np.ndarray:
+    """Synthetic stereo room/hall impulse response (decorrelated noise tails)."""
+    L = int(seconds * SR)
+    tt = np.arange(L) / SR
+    k = rng.standard_normal((CH, L)) * np.exp(-tt / decay)
+    k = signal.sosfilt(signal.butter(2, lp_hz, fs=SR, output="sos"), k, axis=-1)
+    k[:, : int(0.015 * SR)] = 0  # pre-delay
+    return k / np.sqrt((k**2).sum(axis=-1, keepdims=True)) * 6
+
+
+def place(dry: np.ndarray, pan: float, rev: np.ndarray | None = None, wet: float = 0.5) -> np.ndarray:
+    """Mono kernel -> stereo with equal-power pan and optional reverb."""
+    w = np.stack([dry * np.sqrt((1 - pan) / 2), dry * np.sqrt((1 + pan) / 2)])
+    if rev is not None:
+        tail = signal.oaconvolve(dry[None, :], rev, axes=-1)
+        out = np.zeros((CH, tail.shape[1]))
+        out[:, : w.shape[1]] += w * (1 - wet)
+        out += tail * wet
+        return out
+    return w
+
+
+class EventLayer(Layer):
+    """Discrete scheduled sound events. Subclasses implement make() -> (wave(2,L), gap_s)."""
+
+    def setup(self):
+        self.events: list[list] = []
+        self.pos = 0
+        self.init()
+        self.next_t = self.first()
+
+    def init(self):
+        pass
+
+    def first(self) -> float:
+        return float(self.rng.uniform(4, 20))
+
+    def make(self):
+        raise NotImplementedError
+
+    def render(self, n, t):
+        self.pos = int(round(t[0] * SR))
+        end = self.pos + n
+        while self.next_t * SR < end:
+            w, gap = self.make()
+            self.events.append([int(self.next_t * SR), w])
+            self.next_t += max(gap, 0.05)
+        out = np.zeros((CH, n))
+        keep = []
+        for s, w in self.events:
+            a, b = max(s, self.pos), min(s + w.shape[1], end)
+            if a < b:
+                out[:, a - self.pos : b - self.pos] += w[:, a - s : b - s]
+            if s + w.shape[1] > end:
+                keep.append([s, w])
+        self.events = keep
+        return out
+
+
+class Bells(EventLayer):
+    """Distant church bells: a peal of a few strikes every ~`every` seconds.
+    freq: fundamental (Hz); ratios: one entry per bell in the ring; distance 0..1."""
+
+    def init(self):
+        p = self.p
+        self.every = p.get("every", 300)
+        self.dist = p.get("distance", 0.7)
+        self.rev = reverb_kernel(self.rng, 5.0, 1.4, 2600)
+        f0 = p.get("freq", 262)
+        self.bells = [self._bell(f0 * r) for r in p.get("ratios", [1.0, 0.84, 0.75])]
+        self.strikes = p.get("strikes", [5, 12])
+
+    def first(self):  # after the 30 s loudness-calibration chunk
+        return float(self.rng.uniform(35, 120))
+
+    def _bell(self, f):
+        tt = np.arange(int(7 * SR)) / SR
+        parts = [(0.5, 0.9, 5.0), (1.0, 0.8, 3.5), (1.2, 0.5, 2.6), (1.5, 0.35, 2.2),
+                 (2.0, 0.6, 1.8), (2.5, 0.25, 1.2), (3.0, 0.2, 0.9), (4.2, 0.12, 0.5)]
+        k = sum(a * np.sin(2 * np.pi * f * r * tt + self.rng.uniform(0, 6.28)) * np.exp(-tt / d) for r, a, d in parts)
+        k = k * np.minimum(1, tt / 0.003)
+        cut = 6500 - 4500 * self.dist
+        k = signal.sosfilt(signal.butter(2, cut, fs=SR, output="sos"), k)
+        return k / np.abs(k).max()
+
+    def make(self):
+        rng = self.rng
+        n = int(rng.integers(self.strikes[0], self.strikes[1] + 1))
+        gap = rng.uniform(1.7, 2.5)
+        L = int((n * gap + 7.5) * SR)
+        dry = np.zeros(L)
+        for i in range(n):
+            b = self.bells[i % len(self.bells)]
+            s = int((i * gap + rng.normal(0, 0.03)) * SR)
+            s = max(s, 0)
+            m = min(len(b), L - s)
+            dry[s : s + m] += b[:m] * rng.uniform(0.75, 1.0)
+        fade = np.minimum(1, np.arange(L) / (0.5 * SR))
+        w = place(dry * fade, rng.uniform(-0.5, 0.5), self.rev, wet=0.35 + 0.5 * self.dist)
+        return w * 0.25, self.every * rng.uniform(0.6, 1.4)
+
+
+class Clock(EventLayer):
+    """Pendulum clock tick-tock. period: seconds between ticks."""
+
+    def init(self):
+        self.period = self.p.get("period", 1.0)
+        rng = self.rng
+        rev = reverb_kernel(rng, 0.6, 0.12, 5000)
+        self.k = []
+        for f in (2300, 1850):
+            tt = np.arange(int(0.08 * SR)) / SR
+            k = 0.6 * damped_sine(f, 0.08, 0.006) + 0.5 * damped_sine(f * 0.27, 0.08, 0.02)
+            k[: len(tt)] += noise_burst(rng, 3500, 0.0015, 0.08)[: len(tt)] * 0.4
+            self.k.append(place(k, 0.15, rev, wet=0.3))
+        self.i = 0
+
+    def first(self):
+        return 0.3
+
+    def make(self):
+        self.i ^= 1
+        a = self.rng.uniform(0.85, 1.0)
+        return self.k[self.i] * a * 0.5, self.period * (1 + self.rng.normal(0, 0.002))
+
+
+class Chimes(EventLayer):
+    """Music-box / glass chimes: random notes (and short runs) from a pentatonic scale.
+    Not a melody — pitches are random, so nothing resembles an existing tune."""
+
+    def init(self):
+        p = self.p
+        base = p.get("base", 587.33)
+        steps = p.get("scale", [0, 2, 4, 7, 9])
+        octs = p.get("octaves", 2)
+        self.notes = [base * 2 ** ((o * 12 + s) / 12) for o in range(octs) for s in steps]
+        self.per_min = p.get("per_minute", 8)
+        self.rev = reverb_kernel(self.rng, 2.5, 0.6, 6000)
+        self.cache: dict[int, np.ndarray] = {}
+
+    def _tine(self, i):
+        if i not in self.cache:
+            f = self.notes[i]
+            tt = np.arange(int(3.5 * SR)) / SR
+            k = (np.sin(2 * np.pi * f * tt) * np.exp(-tt / 1.6)
+                 + 0.12 * np.sin(2 * np.pi * f * 2 * tt) * np.exp(-tt / 0.5)
+                 + 0.05 * np.sin(2 * np.pi * f * 5.4 * tt) * np.exp(-tt / 0.08))
+            self.cache[i] = k * np.minimum(1, tt / 0.002)
+        return self.cache[i]
+
+    def make(self):
+        rng = self.rng
+        run = 1 if rng.random() < 0.6 else int(rng.integers(2, 5))
+        i = int(rng.integers(len(self.notes)))
+        L = int((run * 0.35 + 3.6) * SR)
+        dry = np.zeros(L)
+        for r in range(run):
+            k = self._tine(i)
+            s = int(r * rng.uniform(0.22, 0.4) * SR)
+            dry[s : s + len(k)] += k[: L - s] * rng.uniform(0.5, 1.0)
+            i = int(np.clip(i + rng.choice([-2, -1, 1, 2]), 0, len(self.notes) - 1))
+        w = place(dry, rng.uniform(-0.6, 0.6), self.rev, wet=0.35)
+        return w * 0.12, rng.exponential(60 / self.per_min)
+
+
+class Whistle(EventLayer):
+    """Distant steam-train whistle: a soft chord blast, sometimes long-short."""
+
+    def init(self):
+        self.every = self.p.get("every", 360)
+        self.f = self.p.get("freq", 440)
+        self.dist = self.p.get("distance", 0.8)
+        self.rev = reverb_kernel(self.rng, 4.0, 1.1, 2000)
+
+    def first(self):
+        return float(self.rng.uniform(40, 120))
+
+    def _blast(self, dur):
+        tt = np.arange(int(dur * SR)) / SR
+        bend = 1 - 0.015 * tt / dur
+        x = np.zeros_like(tt)
+        for r in (1.0, 1.19, 1.5):
+            ph = 2 * np.pi * self.f * r * np.cumsum(bend) / SR
+            for h in range(1, 7):
+                x += np.sin(h * ph) / h * (0.7 if h % 2 == 0 else 1.0)
+        x += 0.3 * self.rng.standard_normal(len(tt))  # steam breath
+        env = np.minimum(1, tt / 0.18) * np.minimum(1, (dur - tt) / 0.5)
+        cut = 2200 - 1500 * self.dist
+        return signal.sosfilt(signal.butter(2, cut, fs=SR, output="sos"), x * env)
+
+    def make(self):
+        rng = self.rng
+        parts = [self._blast(rng.uniform(1.4, 2.6))]
+        if rng.random() < 0.5:
+            parts += [np.zeros(int(0.35 * SR)), self._blast(rng.uniform(0.5, 0.8))]
+        dry = np.concatenate(parts)
+        dry /= np.abs(dry).max() + 1e-9
+        w = place(dry, rng.uniform(-0.7, 0.7), self.rev, wet=0.4 + 0.4 * self.dist)
+        return w * 0.12, self.every * rng.uniform(0.6, 1.5)
+
+
+class Steps(EventLayer):
+    """Someone walking past through fresh snow (crunching footsteps, panned across)."""
+
+    def init(self):
+        self.every = self.p.get("every", 150)
+        rng = self.rng
+        self.k = []
+        for _ in range(8):
+            dur = 0.22
+            L = int(dur * SR)
+            tt = np.arange(L) / SR
+            g = np.zeros(L)
+            dens = 9000 * np.exp(-tt / 0.06)
+            hits = np.nonzero(rng.random(L) < dens / SR)[0]
+            g[hits] = rng.uniform(-1, 1, len(hits))
+            g = signal.sosfilt(signal.butter(2, [900, 5500], btype="band", fs=SR, output="sos"), g)
+            g += 0.8 * damped_sine(rng.uniform(90, 140), dur, 0.02)[:L]
+            self.k.append(g * np.minimum(1, tt / 0.01))
+        self.f = lp(6000)
+
+    def first(self):
+        return float(self.rng.uniform(35, 100))
+
+    def make(self):
+        rng = self.rng
+        n = int(rng.integers(10, 20))
+        step = rng.uniform(0.5, 0.65)
+        L = int((n * step + 0.5) * SR)
+        w = np.zeros((CH, L))
+        p0 = rng.choice([-0.9, 0.9])
+        for i in range(n):
+            x = i / (n - 1)
+            pan = p0 * (1 - 2 * x)
+            amp = np.sin(np.pi * (0.1 + 0.8 * x)) * rng.uniform(0.7, 1.0)
+            k = self.k[rng.integers(len(self.k))] * amp
+            s = int((i * step + rng.normal(0, 0.02)) * SR)
+            s = max(s, 0)
+            w[0, s : s + len(k)] += k[: L - s] * np.sqrt((1 - pan) / 2)
+            w[1, s : s + len(k)] += k[: L - s] * np.sqrt((1 + pan) / 2)
+        return w * 2.0, self.every * rng.uniform(0.5, 1.6)
+
+
+class Sleigh(Layer):
+    """Horse-drawn sleigh: muffled hooves in snow + sleigh-bell shakes on each step,
+    runners hissing over the snow. The horse slows, speeds up and sometimes rests."""
+
+    def setup(self):
+        rng = self.rng
+        self.tempo = Smooth(self.seed + 1, 1 / 50, 0.36, 0.5)
+        self.gate = Smooth(self.seed + 2, 1 / 110)
+        self.inten = Smooth(self.seed + 3, 1 / 35, 0.5, 1.0)
+        self.jingles = []
+        for _ in range(12):
+            L = int(0.35 * SR)
+            j = np.zeros(L)
+            for _ in range(rng.integers(6, 13)):
+                f = rng.uniform(2600, 5200)
+                tt = np.arange(int(0.25 * SR)) / SR
+                b = (np.sin(2 * np.pi * f * tt) + 0.5 * np.sin(2 * np.pi * f * 2.32 * tt)
+                     + 0.25 * np.sin(2 * np.pi * f * 4.25 * tt)) * np.exp(-tt / rng.uniform(0.03, 0.09))
+                s = int(rng.uniform(0, 0.06) * SR)
+                j[s : s + len(b)] += b[: L - s] * rng.uniform(0.3, 1.0)
+            self.jingles.append(j / np.abs(j).max())
+        self.hooves = []
+        for _ in range(6):
+            k = damped_sine(rng.uniform(70, 120), 0.2, 0.03) + noise_burst(rng, 400, 0.02, 0.2) * 0.6
+            self.hooves.append(k)
+        self.L = int(0.4 * SR)
+        self.tail = np.zeros((CH, self.L))
+        self.next_t = 0.5
+        self.beat = 0
+        self.pink = Pink()
+        self.run = bp(700, 2600)
+        self.jlp = lp(7000)
+
+    def render(self, n, t):
+        out = np.zeros((CH, n + self.L))
+        out[:, : self.L] += self.tail
+        t0 = t[0]
+        while self.next_t < t0 + n / SR:
+            tt = np.array([self.next_t])
+            moving = self.gate(tt)[0] > 0.15
+            if moving:
+                i = int((self.next_t - t0) * SR)
+                if 0 <= i < n:
+                    a = self.inten(tt)[0] * self.rng.uniform(0.75, 1.0)
+                    hv = self.hooves[self.rng.integers(len(self.hooves))] * (1.0 if self.beat % 2 == 0 else 0.7)
+                    out[:, i : i + len(hv)] += hv * a * 0.5
+                    j = self.jingles[self.rng.integers(len(self.jingles))] * a * (1.0 if self.beat % 2 == 0 else 0.6)
+                    pan = self.rng.uniform(-0.2, 0.2)
+                    out[0, i : i + len(j)] += j * 0.22 * np.sqrt((1 - pan) / 2)
+                    out[1, i : i + len(j)] += j * 0.22 * np.sqrt((1 + pan) / 2)
+                self.beat += 1
+            self.next_t += self.tempo(tt)[0] * self.rng.uniform(0.96, 1.04)
+        self.tail = out[:, n:].copy()
+        moving = (self.gate(t) > 0.15).astype(float)
+        moving = np.convolve(moving, np.ones(2048) / 2048, mode="same")
+        runners = self.run(self.pink(self.noise(n))) * 0.12 * self.inten(t) * moving
+        return self.jlp(out[:, :n]) + runners
+
+
+class Pad(Layer):
+    """Soft evolving tone cloud (aurora / starlight): each note swells in and out
+    on its own slow cycle; pitches from a consonant chord."""
+
+    def setup(self):
+        self.notes = self.p.get("notes", [110, 164.81, 220, 261.63, 329.63, 392.0, 493.88])
+        rng = self.rng
+        self.env = [Smooth(self.seed + 10 + i, 1 / rng.uniform(20, 45)) for i in range(len(self.notes))]
+        self.det = rng.uniform(0.1, 0.35, len(self.notes))
+        self.ph = rng.uniform(0, 2 * np.pi, (len(self.notes), CH))
+
+    def render(self, n, t):
+        out = np.zeros((CH, n))
+        for i, f in enumerate(self.notes):
+            e = self.env[i](t) ** 3
+            for c, sgn in ((0, -1), (1, 1)):
+                fc = f + sgn * self.det[i]
+                out[c] += (np.sin(2 * np.pi * fc * t + self.ph[i, c])
+                           + 0.2 * np.sin(4 * np.pi * fc * t + self.ph[i, c])) * e
+        return out * 0.08
+
+
 LAYERS = {
     "noise": NoiseBed,
     "rain": Rain,
@@ -465,6 +798,13 @@ LAYERS = {
     "drone": Drone,
     "train": TrackClack,
     "ping": Ping,
+    "bells": Bells,
+    "clock": Clock,
+    "chimes": Chimes,
+    "whistle": Whistle,
+    "steps": Steps,
+    "sleigh": Sleigh,
+    "pad": Pad,
 }
 
 

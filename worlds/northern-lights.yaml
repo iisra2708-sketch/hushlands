@@ -1,0 +1,26 @@
+order: 12
+title: Under the Northern Lights
+primary: Arctic Wind & Soft Aurora Ambience
+hours: 3
+season: winter
+loop_seconds: 24
+hook: Far above the Arctic Circle, a small glass cabin sits alone in the snow. Wind sweeps across the frozen lake and the sky slowly comes alive in ribbons of green light. Lie back, watch, and drift off.
+sounds:
+  - Arctic wind sweeping over the frozen lake
+  - Soft shimmering tones that swell and fade like the aurora
+  - Deep quiet of the polar night
+thumb_lines: [NORTHERN LIGHTS, arctic night, wind • aurora]
+tags: [northern lights ambience, aurora borealis ambience, arctic wind sounds, lapland ambience, winter ambience, ambient sleep music, polar night]
+hashtags: [northernlights, aurora, winterambience]
+image_prompt: "View from inside a cozy glass igloo cabin at night in Lapland, bed with soft blankets in the foreground, large glass dome showing vivid green and violet northern lights over a frozen lake and snowy pine forest, starry sky, painterly cinematic digital illustration, serene and magical, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: wind, strength: 0.75, gain_db: 0}
+  - {type: noise, color: brown, lowpass: 180, gain_db: -12}
+  - {type: pad, gain_db: 0}
+visual:
+  snow: {density: 90, region: [0, 0.05, 1, 0.62]}
+  breathe: 0.02
+  glow:
+    - {x: 0.45, y: 0.15, radius: 0.22, color: [90, 255, 170], strength: 0.22, cycles: [1, 3]}
+    - {x: 0.68, y: 0.2, radius: 0.15, color: [170, 110, 255], strength: 0.14, cycles: [1, 2]}
+    - {x: 0.5, y: 0.5, radius: 0.15, color: [90, 255, 170], strength: 0.1, cycles: [1, 3]}

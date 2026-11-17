@@ -12,7 +12,7 @@ on:
         required: false
         default: ""
   schedule:
-    - cron: "17 2 * * *"   # daily ~03:17 Madrid: renders the next pending world, if any
+    - cron: "17 */3 * * *"   # every 3 h: renders the next pending world (by `order`), if any; no-op otherwise
 
 permissions:
   contents: write
