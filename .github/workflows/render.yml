@@ -1,0 +1,65 @@
+name: Render video
+
+on:
+  workflow_dispatch:
+    inputs:
+      world:
+        description: "World id (leave empty = next pending world that has artwork)"
+        required: false
+        default: ""
+      hours:
+        description: "Duration in hours (leave empty = world default)"
+        required: false
+        default: ""
+  schedule:
+    - cron: "17 2 * * *"   # daily ~03:17 Madrid: renders the next pending world, if any
+
+permissions:
+  contents: write
+
+concurrency: render
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -q -r requirements.txt
+
+      - name: Already rendered
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 300 --json tagName -q '.[].tagName' | sed -E 's/-[0-9]{8}$//' > rendered.txt || true
+          echo "Rendered so far:"; cat rendered.txt
+
+      - name: Render
+        id: render
+        env:
+          IN_WORLD: ${{ inputs.world }}
+          IN_HOURS: ${{ inputs.hours }}
+        run: |
+          ARGS="--out out"
+          if [ -n "$IN_WORLD" ]; then ARGS="$ARGS --world $IN_WORLD"; else ARGS="$ARGS --next --exclude rendered.txt"; fi
+          if [ -n "$IN_HOURS" ]; then ARGS="$ARGS --hours $IN_HOURS"; fi
+          python -m pipeline.render $ARGS
+          echo "world=$(cat out/world.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish as release
+        if: steps.render.outputs.world != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          W: ${{ steps.render.outputs.world }}
+        run: |
+          TAG="$W-$(date +%Y%m%d)"
+          TITLE="$(jq -r .title out/$W-metadata.json)"
+          gh release create "$TAG" "out/$W.mp4" "out/$W-thumb.jpg" "out/$W-metadata.json" \
+            --title "$TITLE" --notes-file "out/$W-upload.md"
+          echo "### ✅ $TITLE" >> "$GITHUB_STEP_SUMMARY"
+          echo "Release: $TAG" >> "$GITHUB_STEP_SUMMARY"

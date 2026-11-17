@@ -1,0 +1,18 @@
+order: 3
+title: Rain on a Tin Roof
+primary: Rain on Tin Roof Sounds
+hours: 3
+hook: An old farmhouse porch, a long summer night, and steady rain drumming on the tin roof above you. No thunder, no wind — just the most comforting sound in the world.
+sounds:
+  - Steady rain drumming on a corrugated tin roof
+  - Soft rainfall on the fields beyond the porch
+thumb_lines: [TIN ROOF RAIN, no thunder, just rain]
+tags: [rain on tin roof, rain sounds no thunder, rain on roof, farmhouse rain, porch rain]
+hashtags: [rainsounds, tinroof, sleepsounds]
+image_prompt: "Covered wooden farmhouse porch at night with a corrugated tin roof, warm porch lantern, rocking chair, steady rain falling over dark fields, puddles reflecting the light, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: rain, surface: tin, intensity: 0.7}
+  - {type: rain, surface: open, intensity: 0.4, gain_db: -10}
+visual:
+  rain: {density: 380, angle: 6, opacity: 0.8}
+  glow: [{x: 0.75, y: 0.25, radius: 0.12, color: [255, 200, 120], strength: 0.3}]

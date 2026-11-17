@@ -1,0 +1,22 @@
+order: 1
+title: Lighthouse in a Storm
+primary: Rain, Thunder & Ocean Sounds
+hours: 3
+hook: You are warm and dry inside an old stone lighthouse. Outside, a storm rolls in over the black sea — rain hammers the glass, waves break against the rocks, and thunder rumbles far away. Nothing can reach you here.
+sounds:
+  - Heavy rain against the lantern-room windows
+  - Waves breaking on the rocks below
+  - Distant, rolling thunder
+  - Wind circling the tower
+thumb_lines: [LIGHTHOUSE, STORM AT SEA, rain • thunder • waves]
+tags: [rain sounds, thunderstorm sounds, ocean sounds, lighthouse ambience, storm sounds for sleeping]
+hashtags: [rainsounds, thunderstorm, sleepsounds]
+image_prompt: "Interior of a lighthouse lantern room at night during a violent storm, warm lamp glowing, rain streaking the curved windows, dark stormy sea and distant lightning outside, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: rain, surface: window, intensity: 0.9}
+  - {type: waves, gain_db: -7, calm: 0.2}
+  - {type: wind, strength: 0.6, gain_db: -9}
+  - {type: thunder, per_minute: 0.8, distance: 0.75, gain_db: -1}
+visual:
+  rain: {density: 420, angle: 14, opacity: 0.9}
+  glow: [{x: 0.5, y: 0.35, radius: 0.18, color: [255, 205, 140], strength: 0.25}]

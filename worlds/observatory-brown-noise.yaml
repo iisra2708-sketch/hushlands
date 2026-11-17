@@ -1,0 +1,18 @@
+order: 12
+title: Midnight Observatory
+primary: Deep Brown Noise
+hours: 3
+hook: The dome is open, the telescope tracks the stars, and the old observatory hums with a deep, even brown noise. Ideal for focus, ADHD study sessions and deep sleep.
+sounds:
+  - Smooth deep brown noise
+  - Faint low hum of the telescope motors
+thumb_lines: [BROWN NOISE, midnight observatory, deep • smooth • steady]
+tags: [brown noise, brown noise for sleeping, brown noise adhd, focus noise, deep brown noise]
+hashtags: [brownnoise, adhd, focus]
+image_prompt: "Old astronomical observatory interior at midnight, open dome revealing the milky way, brass telescope, warm desk lamp, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: noise, color: brown, lowpass: 1000}
+  - {type: drone, tones: [55], gain_db: -16}
+visual:
+  glow: [{x: 0.3, y: 0.7, radius: 0.1, color: [255, 190, 110], strength: 0.25}]
+  breathe: 0.03

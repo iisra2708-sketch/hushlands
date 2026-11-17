@@ -1,0 +1,21 @@
+order: 7
+title: Submarine at the Bottom of the Ocean
+primary: Deep Hum & Sonar Sounds
+hours: 3
+hook: Three hundred meters below the surface, the submarine runs silent. The engines hum, the hull creaks softly, and every so often a sonar ping travels out into the endless dark.
+sounds:
+  - Deep engine hum of the submarine
+  - Occasional distant sonar ping
+  - Low ocean pressure rumble
+thumb_lines: [SUBMARINE, deep ocean sleep, hum • sonar]
+tags: [submarine sounds, deep hum, brown noise, sonar sounds, ocean depth ambience]
+hashtags: [submarine, brownnoise, sleepsounds]
+image_prompt: "Dimly lit submarine bunk room interior, red and blue instrument lights, round porthole showing deep dark ocean with faint bioluminescence, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: drone, tones: [41, 82, 123]}
+  - {type: noise, color: brown, lowpass: 300, gain_db: -5}
+  - {type: ping, every: 50, gain_db: -6}
+visual:
+  glow:
+    - {x: 0.7, y: 0.4, radius: 0.12, color: [90, 160, 255], strength: 0.2}
+    - {x: 0.2, y: 0.25, radius: 0.08, color: [255, 60, 60], strength: 0.12}

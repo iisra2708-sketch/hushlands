@@ -1,0 +1,22 @@
+order: 5
+title: Old Library on a Rainy Night
+primary: Rain & Fireplace Sounds
+hours: 3
+hook: The last reader left hours ago. You have the old library to yourself — tall shelves, a low fire, and rain tapping on the arched windows. Stay as long as you like.
+sounds:
+  - Gentle rain on tall arched windows
+  - Quiet fireplace in the reading room
+  - Soft room tone of a sleeping library
+thumb_lines: [OLD LIBRARY, rainy night, rain • fireplace]
+tags: [library ambience, rain sounds, study ambience, dark academia ambience, fireplace sounds]
+hashtags: [libraryambience, darkacademia, rainsounds]
+image_prompt: "Grand old library at night, towering wooden bookshelves, green reading lamps, small fireplace, tall arched window with rain running down it, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: rain, surface: window, intensity: 0.55}
+  - {type: fire, gain_db: -9}
+  - {type: noise, color: brown, lowpass: 400, gain_db: -14}
+visual:
+  rain: {density: 200, angle: 8, opacity: 0.6}
+  glow:
+    - {x: 0.25, y: 0.7, radius: 0.15, color: [255, 150, 60], strength: 0.3}
+    - {x: 0.65, y: 0.45, radius: 0.08, color: [180, 255, 170], strength: 0.12}

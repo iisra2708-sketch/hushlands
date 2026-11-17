@@ -1,0 +1,18 @@
+order: 11
+title: Rainy Night at a Japanese Ryokan
+primary: Rain & Garden Stream Sounds
+hours: 3
+hook: The shoji doors are slid open to a small garden. Rain falls on moss and stone lanterns, a little stream trickles past, and the tatami room is warm and still.
+sounds:
+  - Soft rain on a moss garden and wooden eaves
+  - Trickling garden stream
+thumb_lines: [RYOKAN RAIN, japanese garden, rain • trickling water]
+tags: [japanese rain, ryokan ambience, rain sounds, zen garden, japan ambience]
+hashtags: [japanambience, rainsounds, zen]
+image_prompt: "Traditional Japanese ryokan tatami room at night with shoji doors open to a moss garden, stone lantern glowing, gentle rain falling, small stream, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+audio:
+  - {type: rain, surface: leaves, intensity: 0.5}
+  - {type: brook, gain_db: -9}
+visual:
+  rain: {density: 220, angle: 3, opacity: 0.6}
+  glow: [{x: 0.65, y: 0.6, radius: 0.1, color: [255, 200, 120], strength: 0.3}]
