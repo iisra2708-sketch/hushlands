@@ -11,10 +11,10 @@ Propietario: Israel (no programador; quiere intervenir lo mínimo). Responder si
 ## Cómo funciona el pipeline
 - `worlds/<id>.yaml`: definición de cada vídeo (título, hook, sonidos, capas de audio, efectos visuales, prompt de imagen, `order`).
 - `assets/images/<id>.jpg`: arte de fondo 16:9. **Sin imagen, el mundo no se renderiza** (el cron lo salta).
-- `pipeline/audio.py`: sintetizador procedural (rain/wind/fire/thunder/waves/brook/drone/train/ping/noise). Sonido 100 % propio.
-- `pipeline/visual.py`: bucle animado sin costuras (lluvia, nieve, brillos) + `-stream_loop` para alargar a horas; miniatura.
+- `pipeline/audio.py`: sintetizador procedural (rain/wind/fire/thunder/waves/brook/drone/train/ping/noise + s3: bells/clock/chimes/whistle/steps/sleigh/pad). Sonido 100 % propio. Nunca melodías reconocibles (villancicos incluidos).
+- `pipeline/visual.py`: bucle animado sin costuras (lluvia, nieve con `region` opcional, brillos con `cycles`, `twinkle` de luces) + `-stream_loop` para alargar a horas; miniatura.
 - `pipeline/meta.py`: título ≤100, descripción con capítulos, tags.
-- `.github/workflows/render.yml`: manual (workflow_dispatch) o cron diario → publica en **Releases** (`<id>-YYYYMMDD`): mp4 + miniatura + metadata.json.
+- `.github/workflows/render.yml`: manual (workflow_dispatch) o cron cada 3 h (siguiente mundo por `order`) → publica en **Releases** (`<id>-YYYYMMDD`): mp4 + miniatura + metadata.json.
 - Prueba local: `python -m pipeline.render --world <id> --minutes 1 --out /tmp/out --allow-placeholder`.
 
 ## Reglas
