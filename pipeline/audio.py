@@ -857,6 +857,8 @@ def render_audio(spec: AudioSpec, out_path: str, bitrate: str = "160k", log=prin
     cmd = [
         "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
         "-f", "f32le", "-ar", str(SR), "-ac", str(CH), "-i", "-",
+        # peak safety (-4 dBFS; AAC adds up to ~1.5 dB overshoot) before AAC: crackles/thunder must not overshoot 0 dBFS after encoding
+        "-af", "alimiter=limit=0.63:attack=3:release=60:level=0",
         "-c:a", "aac", "-b:a", bitrate, out_path,
     ]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)

@@ -46,12 +46,19 @@ class SampleLayer(Layer):
         pool = self.p["pool"]
         self.fade = int(float(self.p.get("fade", 4.0)) * SR)
         self.level = float(self.p.get("level", 0.1))  # K-weighted rms of the layer (synth rain ~0.2, fire ~0.09)
-        self.clips = []
+        cap = float(self.p.get("crest_cap", 12.0))  # max peak/level ratio (12 = 21.6 dB): keeps crackles from clipping
+        raw = []
         for f in sorted(SOUNDS.glob(f"{pool}-*.mp3")):
             x = _decode(f)
             if x.shape[1] < 2 * self.fade + SR:  # too short to crossfade: tile it
                 x = np.tile(x, (1, int(np.ceil((2 * self.fade + SR) / x.shape[1]))))
-            self.clips.append(x / _krms(x))
+            raw.append(x)
+        self.clips = []
+        if raw:
+            # one common scale for the whole pool (keeps the natural variation between clips):
+            # loudness reference = max(K-weighted rms, peak / cap), median over the pool
+            ref = float(np.median([max(_krms(x), float(np.abs(x).max()) / cap) for x in raw]))
+            self.clips = [x / ref for x in raw]
         self.fb = None
         if not self.clips:
             fb = self.p.get("fallback")
