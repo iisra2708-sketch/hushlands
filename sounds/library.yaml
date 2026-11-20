@@ -49,10 +49,11 @@ sounds:
   # ---------------- fase 2: resto de mundos ----------------
   - id: thunder-distant
     phase: 2
-    count: 3
-    duration: 20
+    count: 4
+    duration: 14
     loop: false
-    prompt: "Distant rolling thunder, slow low rumble far away, soft and deep, no rain, no music"
+    influence: 0.5
+    prompt: "One single long, very distant thunder rumble far away, a slow soft low roll that swells gently and fades out, muffled and smooth, no sharp crack, no explosion, no repeated booms, no rain, no music"
   - id: waves-rocks
     phase: 2
     count: 3
@@ -63,5 +64,10 @@ sounds:
     prompt: "Gentle forest stream flowing over smooth stones, steady soft babbling water, close recording, no music"
   - id: train-tracks
     phase: 2
+    count: 3
+    prompt: "Steady rhythmic clickety-clack of train wheels passing over rail joints, heard from inside a moving sleeper train, dry metallic clicks with a regular tu-dum tu-dum rhythm, muffled by the carriage, no engine hum, no horn, no voices, no music"
+  - id: mantel-clock
+    phase: 2
     count: 2
-    prompt: "Rhythmic clickety-clack of train wheels on rails heard from inside a sleeper carriage at night, steady and muffled, no voices, no music"
+    duration: 15
+    prompt: "Small wooden mantel clock ticking softly once per second in a quiet cozy living room, light dry gentle tick tock, close and warm, no chime, no echo, no music"

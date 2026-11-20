@@ -202,5 +202,57 @@ class TickSeq(EventLayer):
         return super().__call__(n, t)
 
 
+class ThunderSeq(EventLayer):
+    """Rare single distant thunder rolls taken from generated clips (pool `thunder-distant`).
+    One clip = one event (no overlapping, no repeats in a row), faded in/out, low-passed so there is no
+    sharp crack, spaced `gap` seconds apart (min, max). `level` = rms of the event (rain sample layer ~0.1).
+
+    {type: thunderseq, pool: thunder-distant, level: 0.05, gap: [90, 240],
+     fallback: {type: thunder, per_minute: 0.5, distance: 0.6, gain_db: -9}}"""
+
+    def init(self):
+        pool = self.p["pool"]
+        lo, hi = self.p.get("gap", [90, 240])
+        self.gap = (float(lo), float(hi))
+        level = float(self.p.get("level", 0.05))
+        self.clips = []
+        for f in sorted(SOUNDS.glob(f"{pool}-*.mp3")):
+            x = _prefilter(_decode(f), self.p.get("highpass", 35), self.p.get("lowpass", 1200), None)
+            x = x / (float(np.sqrt(np.mean(x ** 2))) + 1e-9) * level
+            n_in, n_out = int(1.5 * SR), min(int(2.5 * SR), x.shape[1] // 2)
+            x[:, :n_in] *= np.sin(np.linspace(0, np.pi / 2, n_in))
+            x[:, -n_out:] *= np.cos(np.linspace(0, np.pi / 2, n_out))
+            self.clips.append(x)
+        self.fb = None
+        self.last = -1
+        if not self.clips:
+            fb = self.p.get("fallback")
+            if not fb:
+                raise RuntimeError(f"thunderseq pool '{pool}' is empty and no fallback was given")
+            fb = dict(fb)
+            self.fb = LAYERS[fb.pop("type")](seed=self.seed, **fb)
+
+    def first(self):
+        return float(self.rng.uniform(15, 45))
+
+    def make(self):
+        n = len(self.clips)
+        k = int(self.rng.integers(0, n))
+        if n > 1 and k == self.last:
+            k = (k + 1 + int(self.rng.integers(0, n - 1))) % n
+        self.last = k
+        x = self.clips[k] * db(self.rng.uniform(-3, 0))
+        pan = float(self.rng.uniform(-0.3, 0.3))
+        x = np.stack([x[0] * np.sqrt((1 - pan) / 2), x[1] * np.sqrt((1 + pan) / 2)]) * np.sqrt(2)
+        gap = float(self.rng.uniform(*self.gap)) + x.shape[1] / SR  # gap counts from the end of this event
+        return x, gap
+
+    def __call__(self, n, t):
+        if self.fb is not None:
+            return self.fb(n, t) * self.gain
+        return super().__call__(n, t)
+
+
 LAYERS["sample"] = SampleLayer
 LAYERS["tickseq"] = TickSeq
+LAYERS["thunderseq"] = ThunderSeq

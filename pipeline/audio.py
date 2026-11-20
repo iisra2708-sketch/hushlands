@@ -257,6 +257,31 @@ class Wind(Layer):
         return (self.low(x) * (1 - m) + self.high(x) * m * 0.7) * g * 2.2
 
 
+class Snow(Layer):
+    """Snowfall seen through a window: almost silent. No drumming and no hiss bed, only very sparse,
+    feather-soft flake touches on the glass (3 ms attack, 700-1800 Hz, slow density drift).
+    rate = average touches per second; hush = optional muffled bed (default off)."""
+
+    def setup(self):
+        rng = self.rng
+        kernels = []
+        for f in rng.uniform(700, 1800, 24):
+            k = noise_burst(rng, f, rng.uniform(0.008, 0.02), 0.09)
+            kernels.append(k * np.minimum(1, np.arange(len(k)) / (0.003 * SR)))
+        self.flakes = ImpulseBank(rng, kernels)
+        self.rate = float(self.p.get("rate", 0.8))
+        self.var = Smooth(self.seed + 1, 1 / 40, 0.3, 1.0)
+        self.hush = float(self.p.get("hush", 0.0))
+        self.pink, self.hush_f = Pink(), bp(1200, 4500)
+        self.hush_mod = Smooth(self.seed + 2, 1 / 25, 0.6, 1.0)
+
+    def render(self, n, t):
+        out = self.flakes(n, self.rate * self.var(t), 0.25, 1.0, pan=0.8) * 0.25
+        if self.hush:
+            out = out + self.hush_f(self.pink(self.noise(n))) * self.hush * self.hush_mod(t)
+        return out
+
+
 class Fire(Layer):
     def setup(self):
         self.brown = Brown()
@@ -791,6 +816,7 @@ LAYERS = {
     "noise": NoiseBed,
     "rain": Rain,
     "wind": Wind,
+    "snow": Snow,
     "fire": Fire,
     "thunder": Thunder,
     "waves": Waves,
@@ -857,8 +883,10 @@ def render_audio(spec: AudioSpec, out_path: str, bitrate: str = "160k", log=prin
     cmd = [
         "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
         "-f", "f32le", "-ar", str(SR), "-ac", str(CH), "-i", "-",
-        # peak safety (-4 dBFS; AAC adds up to ~1.5 dB overshoot) before AAC: crackles/thunder must not overshoot 0 dBFS after encoding
-        "-af", "alimiter=limit=0.63:attack=3:release=60:level=0",
+        # peak safety before AAC: crackles/thunder must not overshoot 0 dBFS after encoding. Two stages (-5 dBFS):
+        # a 1 ms look-ahead catches the bulk, a 0.3 ms one the fastest pops (a single 3 ms stage let fire pops through
+        # at -0.5 dBFS and AAC then overshot to +3.4 dBFS)
+        "-af", "alimiter=limit=0.56:attack=1:release=60:level=0,alimiter=limit=0.56:attack=0.3:release=30:level=0",
         "-c:a", "aac", "-b:a", bitrate, out_path,
     ]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
