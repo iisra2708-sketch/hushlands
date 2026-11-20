@@ -12,10 +12,10 @@ thumb_lines: [CHRISTMAS EVE, by the fireplace, fire crackle • snowfall]
 tags: [christmas fireplace, christmas ambience, cozy christmas ambience, christmas eve ambience, crackling fireplace, fireplace sounds, christmas sleep sounds]
 hashtags: [christmasambience, fireplace, cozychristmas]
 image_prompt: "Cozy living room on Christmas Eve at night, stone fireplace with a gentle fire, three knitted stockings hanging on the mantel, decorated Christmas tree with warm fairy lights and wrapped presents, armchair with plaid blanket, frosted window showing falling snow, painterly cinematic digital illustration, warm and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
-target_rms_db: -28
+target_rms_db: -30
 audio:
   - {type: sample, pool: fire, level: 0.10, gain_db: -7, highpass: 120, fallback: {type: fire}}
-  - {type: tickseq, pool: mantel-clock, period: 1.0, peak: 0.25, fallback: {type: clock, period: 1.0, gain_db: -10}}
+  - {type: tickseq, pool: mantel-clock, period: 1.0, peak: 0.07, fallback: {type: clock, period: 1.0, gain_db: -10}}
   - {type: snow, rate: 1.0, gain_db: -16}
 visual:
   twinkle: {count: 80, size: 6, strength: 0.7}

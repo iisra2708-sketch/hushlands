@@ -12,7 +12,7 @@ hashtags: [trainsounds, rainsounds, sleepsounds]
 image_prompt: "Inside a vintage sleeper train cabin at night, small reading lamp, made bed, rain-streaked window with blurred countryside lights passing by, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
 target_rms_db: -29.5
 audio:
-  - {type: sample, pool: train-tracks, level: 0.05, fade: 1.0, highpass: 120, lowpass: 6000, per_clip: true, fallback: {type: train, period: 1.1, gain_db: -13}}
+  - {type: sample, pool: train-tracks, level: 0.03, fade: 1.0, highpass: 120, lowpass: 6000, per_clip: true, fallback: {type: train, period: 1.1, gain_db: -13}}
   - {type: sample, pool: rain-window, level: 0.10, highpass: 380, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: rain, surface: window, intensity: 0.5}}
 visual:
   rain: {density: 260, angle: 60, opacity: 0.7, speed_min: 5, speed_max: 8}

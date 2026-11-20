@@ -14,7 +14,7 @@ image_prompt: "Grand old library at night, towering wooden bookshelves, green re
 target_rms_db: -31
 audio:
   - {type: sample, pool: rain-window, level: 0.10, highpass: 380, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: rain, surface: window, intensity: 0.55}}
-  - {type: thunderseq, pool: thunder-distant, level: 0.05, gap: [90, 240], fallback: {type: thunder, per_minute: 0.5, distance: 0.6, gain_db: -14}}
+  - {type: thunderseq, pool: thunder-distant, level: 0.03, gap: [90, 240], fallback: {type: thunder, per_minute: 0.5, distance: 0.6, gain_db: -14}}
 visual:
   rain: {density: 200, angle: 8, opacity: 0.6}
   glow:
