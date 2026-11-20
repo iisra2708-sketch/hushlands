@@ -83,7 +83,7 @@ def main():
     base, placeholder = load_base(img, wid)
 
     print("1/4 audio")
-    render_audio(AudioSpec(layers=w["audio"], seconds=seconds, seed=seed), str(out / "audio.m4a"))
+    render_audio(AudioSpec(layers=w["audio"], seconds=seconds, seed=seed, target_rms_db=w.get("target_rms_db", -24.0)), str(out / "audio.m4a"))
     print("2/4 visual loop")
     # GitHub Release assets max 2 GiB -> cap video bitrate so the file stays < ~1.9 GB
     maxrate = int(max(300, min(1500, 1.85e9 * 8 / max(seconds, 1) / 1000 - 170)))

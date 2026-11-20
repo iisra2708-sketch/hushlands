@@ -10,9 +10,10 @@ thumb_lines: [TIN ROOF RAIN, no thunder, just rain]
 tags: [rain on tin roof, rain sounds no thunder, rain on roof, farmhouse rain, porch rain]
 hashtags: [rainsounds, tinroof, sleepsounds]
 image_prompt: "Covered wooden farmhouse porch at night with a corrugated tin roof, warm porch lantern, rocking chair, steady rain falling over dark fields, puddles reflecting the light, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -29.3
 audio:
-  - {type: rain, surface: tin, intensity: 0.7}
-  - {type: rain, surface: open, intensity: 0.4, gain_db: -10}
+  - {type: sample, pool: rain-tin, level: 0.10, highpass: 110, lowpass: 9500, shelf_db: -5, per_clip: true, fallback: {type: rain, surface: tin, intensity: 0.7}}
+  - {type: sample, pool: rain-open, level: 0.10, gain_db: -10, highpass: 110, lowpass: 9500, shelf_db: -5, per_clip: true, fallback: {type: rain, surface: open, intensity: 0.4}}
 visual:
   rain: {density: 380, angle: 6, opacity: 0.8}
   glow: [{x: 0.75, y: 0.25, radius: 0.12, color: [255, 200, 120], strength: 0.3}]

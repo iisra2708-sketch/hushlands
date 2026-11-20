@@ -11,9 +11,10 @@ thumb_lines: [OLD LIBRARY, rainy night, rain • fireplace]
 tags: [library ambience, rain sounds, study ambience, dark academia ambience, fireplace sounds]
 hashtags: [libraryambience, darkacademia, rainsounds]
 image_prompt: "Grand old library at night, towering wooden bookshelves, green reading lamps, small fireplace, tall arched window with rain running down it, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -28.2
 audio:
-  - {type: rain, surface: window, intensity: 0.55}
-  - {type: fire, gain_db: -9}
+  - {type: sample, pool: rain-window, level: 0.10, highpass: 110, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: rain, surface: window, intensity: 0.55}}
+  - {type: sample, pool: fire, level: 0.10, gain_db: -9, highpass: 70, fallback: {type: fire}}
   - {type: noise, color: brown, lowpass: 400, gain_db: -14}
 visual:
   rain: {density: 200, angle: 8, opacity: 0.6}

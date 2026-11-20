@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 from scipy import signal
 
-from .audio import CH, LAYERS, SR, Layer, Smooth, db
+from .audio import CH, LAYERS, SR, EventLayer, Layer, Smooth, db
 
 SOUNDS = Path(os.environ.get("HUSHLANDS_SOUNDS", Path(__file__).resolve().parent.parent / "assets" / "sounds"))
 _KW = signal.butter(2, 120, btype="high", fs=SR, output="sos")
@@ -34,6 +34,32 @@ def _decode(path: Path) -> np.ndarray:
         capture_output=True, check=True,
     )
     x = np.frombuffer(r.stdout, dtype=np.float32).astype(np.float64).reshape(-1, CH).T
+    return np.ascontiguousarray(x)
+
+
+def _high_shelf(fc: float, gain_db: float, fs: int = SR, q: float = 0.707) -> np.ndarray:
+    """RBJ high-shelf biquad as SOS."""
+    A = 10 ** (gain_db / 40)
+    w0 = 2 * np.pi * fc / fs
+    cw, sw = np.cos(w0), np.sin(w0)
+    al = sw / (2 * q)
+    b0 = A * ((A + 1) + (A - 1) * cw + 2 * np.sqrt(A) * al)
+    b1 = -2 * A * ((A - 1) + (A + 1) * cw)
+    b2 = A * ((A + 1) + (A - 1) * cw - 2 * np.sqrt(A) * al)
+    a0 = (A + 1) - (A - 1) * cw + 2 * np.sqrt(A) * al
+    a1 = 2 * ((A - 1) - (A + 1) * cw)
+    a2 = (A + 1) - (A - 1) * cw - 2 * np.sqrt(A) * al
+    return signal.tf2sos([b0 / a0, b1 / a0, b2 / a0], [1, a1 / a0, a2 / a0])
+
+
+def _prefilter(x: np.ndarray, hp: float | None, lp: float | None, shelf_db: float | None) -> np.ndarray:
+    """Zero-phase clean-up of a decoded clip: sub-bass removal, optional treble roll-off / shelf."""
+    if hp:
+        x = signal.sosfiltfilt(signal.butter(4, hp, "high", fs=SR, output="sos"), x, axis=-1)
+    if lp:
+        x = signal.sosfiltfilt(signal.butter(4, lp, "low", fs=SR, output="sos"), x, axis=-1)
+    if shelf_db:
+        x = signal.sosfiltfilt(_high_shelf(3500, shelf_db), x, axis=-1)
     return np.ascontiguousarray(x)
 
 
@@ -52,13 +78,16 @@ class SampleLayer(Layer):
             x = _decode(f)
             if x.shape[1] < 2 * self.fade + SR:  # too short to crossfade: tile it
                 x = np.tile(x, (1, int(np.ceil((2 * self.fade + SR) / x.shape[1]))))
-            raw.append(x)
+            raw.append(_prefilter(x, self.p.get("highpass", 70), self.p.get("lowpass"), self.p.get("shelf_db")))
         self.clips = []
         if raw:
-            # one common scale for the whole pool (keeps the natural variation between clips):
-            # loudness reference = max(K-weighted rms, peak / cap), median over the pool
-            ref = float(np.median([max(_krms(x), float(np.abs(x).max()) / cap) for x in raw]))
-            self.clips = [x / ref for x in raw]
+            refs = [max(_krms(x), float(np.abs(x).max()) / cap) for x in raw]
+            if self.p.get("per_clip", False):
+                # stationary textures (rain, wind): equalise every clip so segment changes are inaudible
+                self.clips = [x / r for x, r in zip(raw, refs)]
+            else:
+                # crackly material (fire): one common scale for the pool keeps natural variation
+                self.clips = [x / float(np.median(refs)) for x in raw]
         self.fb = None
         if not self.clips:
             fb = self.p.get("fallback")
@@ -113,4 +142,65 @@ class SampleLayer(Layer):
         return super().__call__(n, t)
 
 
+class TickSeq(EventLayer):
+    """Wall/pendulum clock rebuilt from real ticks: individual tick events are cut out of generated
+    clips and re-scheduled at a perfectly regular period (tick / tock alternate), because generated
+    clock audio is rhythmically irregular and cannot be crossfaded or looped without phasing.
+
+    {type: tickseq, pool: clock, period: 1.0, peak: 0.3, fallback: {type: clock, period: 1.0}}"""
+
+    def init(self):
+        pool = self.p["pool"]
+        self.period = float(self.p.get("period", 1.0))
+        peak = float(self.p.get("peak", 0.3))
+        evs = []
+        for f in sorted(SOUNDS.glob(f"{pool}-*.mp3")):
+            x = _prefilter(_decode(f), self.p.get("highpass", 150), None, None)
+            m = x.mean(0)
+            hf = signal.sosfilt(signal.butter(4, 1500, "high", fs=SR, output="sos"), m)
+            env = np.abs(signal.hilbert(hf))
+            w = int(0.004 * SR)
+            env = np.convolve(env, np.ones(w) / w, "same")
+            pk, _ = signal.find_peaks(env, height=env.max() * 0.35, distance=int(0.2 * SR))
+            for p in pk:
+                a, b = max(p - int(0.008 * SR), 0), min(p + int(0.22 * SR), x.shape[1])
+                e = x[:, a:b].copy()
+                if e.shape[1] < int(0.2 * SR):
+                    continue
+                n = int(0.04 * SR)
+                e[:, -n:] *= np.linspace(1, 0, n)
+                f_, pw = signal.welch(e.mean(0), SR, nperseg=min(1024, e.shape[1]))
+                evs.append((float((f_ * pw).sum() / (pw.sum() + 1e-18)), float(np.abs(e).max()), e))
+        self.fb = None
+        if len(evs) < 6:
+            fb = self.p.get("fallback")
+            if not fb:
+                raise RuntimeError(f"tickseq pool '{pool}' has no usable ticks")
+            fb = dict(fb)
+            self.fb = LAYERS[fb.pop("type")](seed=self.seed, **fb)
+            self.evs = [[], []]
+            return
+        med = float(np.median([e[1] for e in evs]))
+        evs = [e for e in evs if e[1] >= 0.4 * med]          # drop weak / ghost detections
+        evs.sort(key=lambda e: e[0])
+        half = len(evs) // 2
+        self.evs = [[e[2] / med * peak for e in evs[:half]], [e[2] / med * peak for e in evs[half:]]]  # tock (dull) / tick (bright)
+        self.i = 0
+
+    def first(self):
+        return 0.3
+
+    def make(self):
+        self.i ^= 1
+        pool = self.evs[self.i]
+        e = pool[int(self.rng.integers(0, len(pool)))] * self.rng.uniform(0.88, 1.0)
+        return e, self.period * (1 + self.rng.normal(0, 0.0015))
+
+    def __call__(self, n, t):
+        if self.fb is not None:
+            return self.fb(n, t) * self.gain
+        return super().__call__(n, t)
+
+
 LAYERS["sample"] = SampleLayer
+LAYERS["tickseq"] = TickSeq
