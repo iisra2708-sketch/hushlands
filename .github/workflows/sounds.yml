@@ -1,0 +1,62 @@
+name: Generate sounds
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "Library phase (1, 2, ... or all)"
+        required: false
+        default: "1"
+      only:
+        description: "Comma-separated sound ids (overrides phase)"
+        required: false
+        default: ""
+      max_credits:
+        description: "Stop before spending more than this many ElevenLabs credits"
+        required: false
+        default: "28000"
+      dry_run:
+        description: "Only list what would be generated (no API calls, no cost)"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+concurrency: sounds
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install
+        run: pip install -q pyyaml
+
+      - name: Generate
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          IN_PHASE: ${{ inputs.phase }}
+          IN_ONLY: ${{ inputs.only }}
+          IN_MAX: ${{ inputs.max_credits }}
+          IN_DRY: ${{ inputs.dry_run }}
+        run: |
+          ARGS="--phase ${IN_PHASE:-1} --max-credits ${IN_MAX:-28000}"
+          if [ -n "$IN_ONLY" ]; then ARGS="$ARGS --only $IN_ONLY"; fi
+          if [ "$IN_DRY" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python -m pipeline.gen_sounds $ARGS | tee gen.log
+          { echo '### Sound generation'; echo '```'; cat gen.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit new clips
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "hushlands-bot"
+          git config user.email "hushlands-bot@users.noreply.github.com"
+          git add assets/sounds
+          if git diff --cached --quiet; then echo "nothing new to commit"; exit 0; fi
+          git commit -m "Add generated sound clips"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

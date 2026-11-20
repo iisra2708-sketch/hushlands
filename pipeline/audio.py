@@ -869,3 +869,6 @@ def render_audio(spec: AudioSpec, out_path: str, bitrate: str = "160k", log=prin
     p.stdin.close()
     if p.wait() != 0:
         raise RuntimeError("ffmpeg audio encode failed")
+
+# sample layer (generated clips) registers itself in LAYERS
+from . import audio_samples  # noqa: E402,F401

@@ -1,0 +1,67 @@
+# Biblioteca de sonidos generados con ElevenLabs Sound Effects.
+# Se genera con el workflow "Generate sounds" (Actions) -> assets/sounds/<id>-NN.mp3
+# Cada entrada produce `count` clips distintos (misma consulta, resultado distinto).
+# Los mundos los usan con la capa `sample` (ver pipeline/audio_samples.py).
+defaults:
+  duration: 30        # segundos (máx. 30)
+  loop: true          # bucle sin costuras (solo modelo v2)
+  influence: 0.4      # prompt_influence 0..1
+
+sounds:
+  # ---------------- fase 1: capas críticas (lluvia, fuego, viento, reloj) ----------------
+  - id: rain-tin
+    phase: 1
+    count: 3
+    prompt: "Steady medium rain falling on a corrugated tin roof, heard from underneath on a covered porch, soft constant drumming, no thunder, no wind, no music, natural recording"
+  - id: rain-window
+    phase: 1
+    count: 3
+    prompt: "Heavy rain hitting a large glass window from inside a stone room, steady downpour with individual drops tapping the glass, deep and warm, no thunder, no music"
+  - id: rain-open
+    phase: 1
+    count: 3
+    prompt: "Gentle steady rain falling on a grass field and garden at night, soft close pitter-patter on leaves and ground, calm and even, no thunder, no wind, no music"
+  - id: rain-tent
+    phase: 1
+    count: 2
+    prompt: "Steady rain drumming softly on a canvas tent heard from inside, muffled warm patter, calm and even, no thunder, no music"
+  - id: rain-leaves
+    phase: 1
+    count: 2
+    prompt: "Soft rain falling on a dense forest canopy and leaves, gentle natural patter with distant dripping, relaxing, no thunder, no music"
+  - id: fire
+    phase: 1
+    count: 4
+    prompt: "Cozy wood fireplace, gentle crackling and occasional soft pops, warm low flame rumble, close natural recording, no voices, no music"
+  - id: wind-soft
+    phase: 1
+    count: 3
+    prompt: "Gentle night wind blowing softly outside a window, low smooth airy whoosh with slow gusts, calm and steady, no rain, no music"
+  - id: wind-strong
+    phase: 1
+    count: 2
+    prompt: "Strong cold winter wind howling around a stone building, deep rolling gusts with a soft whistle, steady, no rain, no music"
+  - id: clock
+    phase: 1
+    count: 2
+    prompt: "Antique wooden wall pendulum clock ticking steadily once per second, close and dry, warm wood tone, quiet room, no chimes, no music"
+
+  # ---------------- fase 2: resto de mundos ----------------
+  - id: thunder-distant
+    phase: 2
+    count: 3
+    duration: 20
+    loop: false
+    prompt: "Distant rolling thunder, slow low rumble far away, soft and deep, no rain, no music"
+  - id: waves-rocks
+    phase: 2
+    count: 3
+    prompt: "Ocean waves rolling and breaking against rocks at the foot of a cliff at night, deep and steady, no voices, no music"
+  - id: brook
+    phase: 2
+    count: 3
+    prompt: "Gentle forest stream flowing over smooth stones, steady soft babbling water, close recording, no music"
+  - id: train-tracks
+    phase: 2
+    count: 2
+    prompt: "Rhythmic clickety-clack of train wheels on rails heard from inside a sleeper carriage at night, steady and muffled, no voices, no music"
