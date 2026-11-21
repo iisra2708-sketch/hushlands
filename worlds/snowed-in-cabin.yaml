@@ -1,19 +1,21 @@
 order: 2
 title: Snowed-In Cabin
-primary: Blizzard & Crackling Fireplace Sounds
+primary: Cozy Cabin Fireplace & Distant Blizzard Sounds
 hours: 3
 hook: A blizzard has buried the mountain road, and you are snowed in for the night. The fire crackles, the logs settle, and the wind howls around a cabin built to outlast it.
 sounds:
   - Crackling fireplace with popping embers
-  - Blizzard wind gusting around the cabin
-  - Soft low rumble of the hearth
+  - Distant blizzard wind outside the walls
+  - Soft snow falling past the window
 thumb_lines: [SNOWED IN, CABIN FIREPLACE, blizzard • fire crackle]
-tags: [blizzard sounds, fireplace sounds, crackling fire, winter ambience, cozy cabin]
+tags: [fireplace sounds, crackling fire, blizzard sounds, winter ambience, cozy cabin, snowfall sounds]
 hashtags: [fireplace, blizzard, cozy]
 image_prompt: "Cozy wooden log cabin interior at night, stone fireplace with a roaring fire, armchair with wool blanket, large window showing a heavy blizzard and snow-covered pines outside, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -29.5
 audio:
-  - {type: fire, gain_db: 0}
-  - {type: wind, strength: 0.85, gain_db: -3}
+  - {type: sample, pool: fire, level: 0.10, gain_db: 0, highpass: 120, lowpass: 9000, crest_cap: 5, fallback: {type: fire}}
+  - {type: sample, pool: wind-strong, level: 0.0006, highpass: 350, lowpass: 900, per_clip: true, fade: 6.0, fallback: {type: wind, strength: 0.5, gain_db: -12}}
+  - {type: snow, rate: 1.2, gain_db: -10}
 visual:
   snow: {density: 220}
   glow: [{x: 0.3, y: 0.65, radius: 0.22, color: [255, 140, 50], strength: 0.4}]

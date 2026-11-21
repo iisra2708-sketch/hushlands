@@ -52,7 +52,8 @@ def _high_shelf(fc: float, gain_db: float, fs: int = SR, q: float = 0.707) -> np
     return signal.tf2sos([b0 / a0, b1 / a0, b2 / a0], [1, a1 / a0, a2 / a0])
 
 
-def _prefilter(x: np.ndarray, hp: float | None, lp: float | None, shelf_db: float | None) -> np.ndarray:
+def _prefilter(x: np.ndarray, hp: float | None, lp: float | None, shelf_db: float | None,
+               notch: list | None = None) -> np.ndarray:
     """Zero-phase clean-up of a decoded clip: sub-bass removal, optional treble roll-off / shelf."""
     if hp:
         x = signal.sosfiltfilt(signal.butter(4, hp, "high", fs=SR, output="sos"), x, axis=-1)
@@ -60,6 +61,9 @@ def _prefilter(x: np.ndarray, hp: float | None, lp: float | None, shelf_db: floa
         x = signal.sosfiltfilt(signal.butter(4, lp, "low", fs=SR, output="sos"), x, axis=-1)
     if shelf_db:
         x = signal.sosfiltfilt(_high_shelf(3500, shelf_db), x, axis=-1)
+    for fc, q in (notch or []):  # kill steady whistles / hums: [[freq_hz, Q], ...]
+        b, a = signal.iirnotch(float(fc), float(q), fs=SR)
+        x = signal.filtfilt(b, a, x, axis=-1)
     return np.ascontiguousarray(x)
 
 
@@ -78,7 +82,7 @@ class SampleLayer(Layer):
             x = _decode(f)
             if x.shape[1] < 2 * self.fade + SR:  # too short to crossfade: tile it
                 x = np.tile(x, (1, int(np.ceil((2 * self.fade + SR) / x.shape[1]))))
-            raw.append(_prefilter(x, self.p.get("highpass", 70), self.p.get("lowpass"), self.p.get("shelf_db")))
+            raw.append(_prefilter(x, self.p.get("highpass", 70), self.p.get("lowpass"), self.p.get("shelf_db"), self.p.get("notch")))
         self.clips = []
         if raw:
             refs = [max(_krms(x), float(np.abs(x).max()) / cap) for x in raw]
