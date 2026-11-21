@@ -57,7 +57,7 @@ sounds:
   - id: waves-rocks
     phase: 2
     count: 3
-    prompt: "Ocean waves rolling and breaking against rocks at the foot of a cliff at night, deep and steady, no voices, no music"
+    prompt: "Ocean waves rolling in and breaking against rocks at the foot of a cliff at night, heard from inside a stone tower, soft rolling surf with gentle crashes and hiss of receding foam, steady, no deep sub-bass rumble, no voices, no music"
   - id: brook
     phase: 2
     count: 3
@@ -76,3 +76,7 @@ sounds:
     count: 3
     duration: 15
     prompt: "Large traditional wooden wall clock with a slow pendulum, soft deep wooden tock once per second, warm mellow dull ticks heard in a quiet cozy room, no chime, no bells, no cuckoo, no metallic ring, no echo, no reverb, no music"
+  - id: wind-blizzard
+    phase: 2
+    count: 3
+    prompt: "Muffled blizzard wind heard from inside a warm wooden cabin, airy midrange whoosh with soft whistling through window gaps, slow rising and falling gusts, smooth and steady, no deep rumble, no low-frequency boom, no thunder, no snow crunching, no voices, no music"
