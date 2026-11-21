@@ -76,6 +76,7 @@ sounds:
     count: 3
     duration: 15
     prompt: "Large traditional wooden wall clock with a slow pendulum, soft deep wooden tock once per second, warm mellow dull ticks heard in a quiet cozy room, no chime, no bells, no cuckoo, no metallic ring, no echo, no reverb, no music"
+  # OJO: salió casi solo graves (< 250 Hz) -> NO usar como viento audible (ver CLAUDE.md, sesión 8)
   - id: wind-blizzard
     phase: 2
     count: 3
