@@ -155,7 +155,7 @@ class TickSeq(EventLayer):
         peak = float(self.p.get("peak", 0.3))
         evs = []
         for f in sorted(SOUNDS.glob(f"{pool}-*.mp3")):
-            x = _prefilter(_decode(f), self.p.get("highpass", 150), None, None)
+            x = _prefilter(_decode(f), self.p.get("highpass", 150), self.p.get("lowpass"), None)
             m = x.mean(0)
             hf = signal.sosfilt(signal.butter(4, 1500, "high", fs=SR, output="sos"), m)
             env = np.abs(signal.hilbert(hf))

@@ -71,3 +71,8 @@ sounds:
     count: 2
     duration: 15
     prompt: "Small wooden mantel clock ticking softly once per second in a quiet cozy living room, light dry gentle tick tock, close and warm, no chime, no echo, no music"
+  - id: wall-clock
+    phase: 2
+    count: 3
+    duration: 15
+    prompt: "Large traditional wooden wall clock with a slow pendulum, soft deep wooden tock once per second, warm mellow dull ticks heard in a quiet cozy room, no chime, no bells, no cuckoo, no metallic ring, no echo, no reverb, no music"
