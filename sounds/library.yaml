@@ -81,3 +81,56 @@ sounds:
     phase: 2
     count: 3
     prompt: "Muffled blizzard wind heard from inside a warm wooden cabin, airy midrange whoosh with soft whistling through window gaps, slow rising and falling gusts, smooth and steady, no deep rumble, no low-frequency boom, no thunder, no snow crunching, no voices, no music"
+
+  # ---------------- fase 3 (s9, 23 nov): migración T3/T4 a clips ----------------
+  # T3 (navideños) primero: el orden del fichero es el orden de generación.
+  - id: sleigh-hooves
+    phase: 3
+    count: 3
+    prompt: "Horse-drawn sleigh gliding slowly through a quiet snowy forest at night, steady gentle trot of hooves on packed snow, soft rhythmic jingle of small sleigh bells, runners hissing over the snow, calm and even, no melody, no music, no voices"
+  - id: church-bells
+    phase: 3
+    count: 2
+    duration: 20
+    loop: false
+    influence: 0.5
+    prompt: "A single large church bell tolling slowly four times far away across a snowy old town at night, soft distant strikes with long warm decay fading out, no melody, no carillon tune, no music, no voices, no traffic"
+  - id: snow-footsteps
+    phase: 3
+    count: 2
+    duration: 15
+    loop: false
+    prompt: "Slow calm footsteps crunching through fresh deep snow, one person walking past at an unhurried pace, close and soft, quiet winter night, no voices, no wind, no music"
+  - id: simmering-pot
+    phase: 3
+    count: 2
+    prompt: "A pot of soup simmering gently on a wood stove in a quiet cottage kitchen, soft continuous low bubbling with tiny pops and a faint lid rattle now and then, close and warm, no voices, no music"
+  - id: train-whistle
+    phase: 3
+    count: 2
+    duration: 8
+    loop: false
+    influence: 0.5
+    prompt: "One single distant steam train whistle far away across snowy hills at night, soft long mellow tone that fades out, heard from inside a carriage, no music, no voices"
+  # prueba de viento con fuente de agudos (no generar más hasta escucharlos)
+  - id: wind-pines
+    phase: 3
+    count: 1
+    prompt: "Light steady breeze rustling through pine needles and bare branches in a snowy forest, airy high-frequency hiss and soft rustle, gentle slow swells, no low rumble, no howling, no whistle tone, no music"
+  - id: wind-snowdrift
+    phase: 3
+    count: 1
+    prompt: "Cold arctic breeze blowing fine snow grains across an icy open plain, soft airy hiss of drifting snow with gentle slow swells, bright and grainy, no low rumble, no howling, no whistle tone, no music"
+  # T4
+  - id: stream-stones
+    phase: 3
+    count: 3
+    prompt: "Gentle mountain stream flowing over smooth stones, steady soft babbling and trickling water, close natural recording, even and calm, no deep rumble, no music, no voices"
+  - id: city-snow
+    phase: 3
+    count: 2
+    prompt: "A quiet city at night during snowfall heard through an open apartment window high above the street, very distant soft muffled traffic hush, a faraway car passing slowly on wet snow now and then, calm, no sirens, no horns, no voices, no music"
+  - id: waves-cliff
+    phase: 3
+    count: 2
+    prompt: "Ocean waves rolling in and breaking on rocks at the foot of a tall sea cliff, heard from the clifftop in open air, steady soft surf with gentle crashes and the hiss of receding foam, no deep sub-bass rumble, no wind howl, no voices, no music"
