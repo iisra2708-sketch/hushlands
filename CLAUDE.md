@@ -39,3 +39,12 @@ Propietario: Israel (no programador; quiere intervenir lo mínimo). Responder si
 - Cabaña v2: fuego + `wind-strong` recortado + `snow`, `target_rms_db: -29.5` (−26,4 LUFS). Faro v2: `rain-window` (hp 380) + `waves-rocks` (hp 150, lp 5000, `level: 0.03`) + `thunderseq` (`gap: [60, 150]`), `target_rms_db: -30` (−25,8 LUFS, pico −10 dBFS). Aprobados por Israel a oído.
 - **Coste real de un clip de 30 s en ElevenLabs = 300 créditos** (no 225). `gen_sounds` estima el peor caso (1.200/clip) y se para pronto con `--max-credits` bajo: pedir a Israel el tope en esos términos (p. ej. "hasta 3,6 k de tope, gasto real ≈ 1 k"), porque el sistema bloquea un tope superior al autorizado.
 - Previews de audio para Israel: 2,5 min bastan para fuego/lluvia; 6,5 min si hay truenos. Mandar siempre 2 variantes (A/B) para ahorrar rondas.
+
+## Aprendizajes sesión 9 (23 nov): migración T3/T4
+- `render_audio` limita sobre la señal **sobremuestreada ×4** (true peak): antes salían −5 dBFS de pico de muestra pero hasta +0,6 dBTP tras AAC.
+- Vientos usables por fin: `wind-pines` y `wind-snowdrift` (prompts con fuente de agudos: agujas de pino, granos de nieve). `simmering-pot` y `city-snow` son casi solo graves → `highpass` 150–180 y nivel bajo.
+- `thunderseq` vale para cualquier evento puntual (campanas, pasos, silbato): subir su `lowpass` (por defecto 1200, pensado para truenos).
+- La cajita sintética (`chimes`) pesa mucho en LUFS: `gain_db` −26 (presente) / −31 (suave) junto a fuego de clip.
+- El saldo de ElevenLabs se actualiza con retraso: `gen_sounds` se pasa del `max_credits` (tope 4 k → 4,76 k reales).
+- Mezclas A/B enviadas a Israel en `sounds/previews-s9/` (con `prev.py`).
+- Descripción: "designed layer by layer from AI-generated and synthesized sounds" (ya no "synthesized from scratch").
