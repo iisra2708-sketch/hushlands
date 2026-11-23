@@ -134,3 +134,22 @@ sounds:
     phase: 3
     count: 3
     prompt: "Ocean waves rolling in and breaking on rocks at the foot of a tall sea cliff, heard from the clifftop in open air, steady soft surf with gentle crashes and the hiss of receding foam, no deep sub-bass rumble, no wind howl, no voices, no music"
+  # s9b (23 nov, tras la escucha de Israel): sustitutos sin ruido de fondo
+  - id: music-box-notes
+    phase: 4
+    count: 2
+    duration: 20
+    loop: false
+    influence: 0.6
+    prompt: "A small antique music box playing a few slow, soft, random single notes with long gentle decay and long pauses between them, sparse and calm, no melody, no recognizable tune, no background music, quiet cozy room"
+  - id: toy-workshop
+    phase: 4
+    count: 2
+    prompt: "Quiet wooden toy workshop at night, slow soft sounds of a craftsman gently sanding and carving wood, occasional light wooden clicks, calm and sparse, no hammering, no machines, no voices, no music"
+  - id: ice-sing
+    phase: 4
+    count: 2
+    duration: 15
+    loop: false
+    influence: 0.5
+    prompt: "Distant frozen lake ice singing on a still arctic night, soft deep twangs and gentle pinging echoes travelling across the ice, sparse and slow, no wind, no music, no voices"
