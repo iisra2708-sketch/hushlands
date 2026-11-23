@@ -11,6 +11,7 @@ thumb_lines: [SUBMARINE, deep ocean sleep, hum • sonar]
 tags: [submarine sounds, deep hum, brown noise, sonar sounds, ocean depth ambience]
 hashtags: [submarine, brownnoise, sleepsounds]
 image_prompt: "Dimly lit submarine bunk room interior, red and blue instrument lights, round porthole showing deep dark ocean with faint bioluminescence, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -33
 audio:
   - {type: drone, tones: [41, 82, 123]}
   - {type: noise, color: brown, lowpass: 300, gain_db: -5}

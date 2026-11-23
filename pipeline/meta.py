@@ -37,7 +37,7 @@ def build(world: dict, hours: float) -> dict:
 
 Use it for deep sleep, insomnia relief, studying, reading, meditation, focus or masking tinnitus. Turn the volume down low, close your eyes, and let this place hold you for the next {h} hours.
 
-Every Hushlands soundscape is designed and synthesized from scratch, layer by layer — no recycled stock loops. Artwork is AI-assisted.
+Every Hushlands soundscape is designed layer by layer from AI-generated and synthesized sounds — no recycled stock loops. Artwork is AI-assisted.
 
 ⏱ Chapters
 {chr(10).join(chapters)}

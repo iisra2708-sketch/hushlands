@@ -10,6 +10,7 @@ thumb_lines: [STARSHIP, sleep pod, engine hum • brown noise]
 tags: [spaceship ambience, spaceship sounds for sleeping, brown noise, sci fi ambience, space sleep]
 hashtags: [spaceship, scifiambience, brownnoise]
 image_prompt: "Futuristic sleep pod cabin on a starship, soft blue ambient lighting, large viewport showing a nebula and drifting stars, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -33
 audio:
   - {type: drone, tones: [36, 72, 108, 216]}
   - {type: noise, color: brown, lowpass: 900, gain_db: -3}

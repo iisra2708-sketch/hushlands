@@ -10,6 +10,7 @@ thumb_lines: [BROWN NOISE, midnight observatory, deep • smooth • steady]
 tags: [brown noise, brown noise for sleeping, brown noise adhd, focus noise, deep brown noise]
 hashtags: [brownnoise, adhd, focus]
 image_prompt: "Old astronomical observatory interior at midnight, open dome revealing the milky way, brass telescope, warm desk lamp, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -33
 audio:
   - {type: noise, color: brown, lowpass: 1000}
   - {type: drone, tones: [55], gain_db: -16}
