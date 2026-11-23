@@ -6,16 +6,17 @@ season: christmas
 hook: Every toy is finished and wrapped. The workbenches are tidy, the lanterns are turned down low, and a stove still glows in the corner while snow piles up against the round windows of the little workshop at the top of the world.
 sounds:
   - Wood stove crackling in the corner
-  - Soft music-box chimes from a toy on the shelf
-  - Polar wind outside the workshop windows
+  - Soft single music-box notes from a toy on the shelf
+  - Snow settling quietly against the windows
 thumb_lines: [SANTA'S WORKSHOP, christmas eve, fire • music box]
 tags: [santas workshop ambience, north pole ambience, christmas ambience, christmas eve ambience, music box sounds, cozy christmas ambience, christmas sleep sounds]
 hashtags: [christmasambience, northpole, cozychristmas]
 image_prompt: "Cozy Santa's toy workshop interior at night at the North Pole, wooden workbenches with handmade wooden toys and wrapped gifts, shelves of toys, warm cast iron stove glowing, round window with heavy snowfall outside, pine garlands and warm lanterns, painterly cinematic digital illustration, whimsical and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no characters, no text, no logos"
+target_rms_db: -30.5
 audio:
-  - {type: fire, gain_db: -5}
-  - {type: chimes, per_minute: 7, gain_db: -12}
-  - {type: wind, strength: 0.5, gain_db: -10}
+  - {type: sample, pool: fire, level: 0.10, highpass: 120, lowpass: 9000, crest_cap: 4, fallback: {type: fire}}
+  - {type: thunderseq, pool: music-box-notes, level: 0.004, highpass: 400, lowpass: 9000, gap: [45, 110], fallback: {type: chimes, per_minute: 4, gain_db: -31}}
+  - {type: snow, rate: 1.0, gain_db: -12}
 visual:
   twinkle: {count: 60, size: 6, strength: 0.6}
   snow: {density: 300, region: [0.38, 0.12, 0.63, 0.52]}

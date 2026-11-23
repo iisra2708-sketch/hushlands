@@ -1,22 +1,23 @@
 order: 12
 title: Under the Northern Lights
-primary: Arctic Wind & Soft Aurora Ambience
+primary: Soft Aurora Ambience & Distant Singing Ice
 hours: 3
 season: winter
 loop_seconds: 24
-hook: Far above the Arctic Circle, a small glass cabin sits alone in the snow. Wind sweeps across the frozen lake and the sky slowly comes alive in ribbons of green light. Lie back, watch, and drift off.
+hook: Far above the Arctic Circle, a small glass cabin sits alone in the snow. The air is perfectly still, the frozen lake sings softly now and then, and the sky slowly comes alive in ribbons of green light. Lie back, watch, and drift off.
 sounds:
-  - Arctic wind sweeping over the frozen lake
   - Soft shimmering tones that swell and fade like the aurora
-  - Deep quiet of the polar night
+  - The frozen lake singing far away now and then
+  - A faint breath of breeze over the snow
 thumb_lines: [NORTHERN LIGHTS, arctic night, wind • aurora]
 tags: [northern lights ambience, aurora borealis ambience, arctic wind sounds, lapland ambience, winter ambience, ambient sleep music, polar night]
 hashtags: [northernlights, aurora, winterambience]
 image_prompt: "View from inside a cozy glass igloo cabin at night in Lapland, bed with soft blankets in the foreground, large glass dome showing vivid green and violet northern lights over a frozen lake and snowy pine forest, starry sky, painterly cinematic digital illustration, serene and magical, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -31
 audio:
-  - {type: wind, strength: 0.75, gain_db: 0}
-  - {type: noise, color: brown, lowpass: 180, gain_db: -12}
   - {type: pad, gain_db: 0}
+  - {type: sample, pool: wind-pines, level: 0.10, gain_db: -20, highpass: 200, lowpass: 2500, per_clip: true, fade: 6.0, fallback: {type: wind, strength: 0.4, gain_db: -16}}
+  - {type: thunderseq, pool: ice-sing, clips: [2], level: 0.004, highpass: 400, lowpass: 6000, gap: [60, 150], fallback: {type: ping, every: 90, gain_db: -20}}
 visual:
   snow: {density: 90, region: [0, 0.05, 1, 0.62]}
   breathe: 0.02
