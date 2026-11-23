@@ -1,0 +1,4 @@
+target_rms_db: -30
+layers:
+  - {type: sample, pool: stream-stones, level: 0.10, highpass: 200, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: brook}}
+  - {type: sample, pool: wind-pines, level: 0.10, gain_db: -9, highpass: 200, lowpass: 12000, shelf_db: -3, per_clip: true, fade: 6.0, fallback: {type: wind, strength: 0.3, gain_db: -12}}

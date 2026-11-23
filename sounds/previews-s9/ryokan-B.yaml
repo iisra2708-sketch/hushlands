@@ -1,0 +1,4 @@
+target_rms_db: -30
+layers:
+  - {type: sample, pool: rain-leaves, level: 0.10, gain_db: -3, highpass: 500, lowpass: 10000, shelf_db: -4, per_clip: true, fallback: {type: rain, surface: leaves, intensity: 0.5}}
+  - {type: sample, pool: stream-stones, level: 0.10, highpass: 200, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: brook, gain_db: -9}}

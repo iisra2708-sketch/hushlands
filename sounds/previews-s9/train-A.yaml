@@ -1,0 +1,5 @@
+target_rms_db: -29.5
+layers:
+  - {type: sample, pool: train-tracks, level: 0.03, fade: 1.0, highpass: 120, lowpass: 6000, per_clip: true, fallback: {type: train, period: 1.1, gain_db: -13}}
+  - {type: thunderseq, pool: train-whistle, level: 0.012, highpass: 150, lowpass: 3000, gap: [150, 300], fallback: {type: whistle, freq: 392, every: 300, gain_db: -21}}
+  - {type: snow, rate: 1.2, gain_db: -10}

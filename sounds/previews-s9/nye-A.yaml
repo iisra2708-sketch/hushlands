@@ -1,0 +1,6 @@
+target_rms_db: -30
+layers:
+  - {type: sample, pool: city-snow, level: 0.10, gain_db: -4, highpass: 150, lowpass: 6000, per_clip: true, fade: 6.0, fallback: {type: noise, color: brown, lowpass: 260, gain_db: -6}}
+  - {type: tickseq, pool: wall-clock, period: 1.0, peak: 0.03, lowpass: 3500, fallback: {type: clock, period: 1.0, gain_db: -10}}
+  - {type: thunderseq, pool: church-bells, level: 0.015, highpass: 200, lowpass: 5000, gap: [200, 420], fallback: {type: bells, freq: 196, distance: 0.85, every: 360, gain_db: -18}}
+  - {type: snow, rate: 1.0, gain_db: -12}

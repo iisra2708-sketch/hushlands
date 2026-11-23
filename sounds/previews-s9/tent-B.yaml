@@ -1,0 +1,5 @@
+target_rms_db: -30
+layers:
+  - {type: sample, pool: rain-tent, level: 0.10, highpass: 150, lowpass: 9500, shelf_db: -3, notch: [[1007, 10]], per_clip: true, fallback: {type: rain, surface: tent, intensity: 0.7}}
+  - {type: sample, pool: rain-leaves, level: 0.10, gain_db: -3, highpass: 500, lowpass: 10000, shelf_db: -4, per_clip: true, fallback: {type: rain, surface: leaves, intensity: 0.5, gain_db: -9}}
+  - {type: thunderseq, pool: thunder-distant, level: 0.04, gap: [50, 120], fallback: {type: thunder, per_minute: 0.4, distance: 0.95, gain_db: -14}}

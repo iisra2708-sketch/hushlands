@@ -1,0 +1,3 @@
+target_rms_db: -30
+layers:
+  - {type: sample, pool: stream-stones, level: 0.10, highpass: 200, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: brook}}
