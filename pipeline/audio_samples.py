@@ -227,7 +227,10 @@ class ThunderSeq(EventLayer):
         self.gap = (float(lo), float(hi))
         level = float(self.p.get("level", 0.05))
         self.clips = []
-        for f in sorted(SOUNDS.glob(f"{pool}-*.mp3")):
+        files = sorted(SOUNDS.glob(f"{pool}-*.mp3"))
+        if self.p.get("clips"):  # 1-based subset of the pool
+            files = [files[i - 1] for i in self.p["clips"] if 0 < i <= len(files)]
+        for f in files:
             x = _prefilter(_decode(f), self.p.get("highpass", 35), self.p.get("lowpass", 1200), None)
             x = x / (float(np.sqrt(np.mean(x ** 2))) + 1e-9) * level
             n_in, n_out = int(1.5 * SR), min(int(2.5 * SR), x.shape[1] // 2)

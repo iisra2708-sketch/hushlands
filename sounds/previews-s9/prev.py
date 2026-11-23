@@ -5,7 +5,9 @@ sys.path.insert(0, '/home/claude/hushlands')
 import os; os.chdir('/home/claude/hushlands')
 from pipeline.audio import AudioSpec, render_audio
 mix = yaml.safe_load(open(sys.argv[1]))
-name = sys.argv[2]; secs = float(sys.argv[3]) if len(sys.argv) > 3 else 150; seed = int(sys.argv[4]) if len(sys.argv) > 4 else 1
+name = sys.argv[2]; secs = float(sys.argv[3]) if len(sys.argv) > 3 else 150; import zlib
+a4 = sys.argv[4] if len(sys.argv) > 4 else '1'
+seed = int(a4) if a4.isdigit() else zlib.crc32(a4.encode()) % 100000
 out = f'/home/claude/prev/{name}.m4a'
 render_audio(AudioSpec(layers=mix['layers'], seconds=secs, seed=seed, target_rms_db=mix.get('target_rms_db', -29)), out, log=lambda *a: None)
 r = subprocess.run(['ffmpeg', '-hide_banner', '-i', out, '-af', 'ebur128=peak=true', '-f', 'null', '-'], capture_output=True, text=True).stderr

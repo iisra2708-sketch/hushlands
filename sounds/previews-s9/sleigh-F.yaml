@@ -1,0 +1,4 @@
+target_rms_db: -30.6
+layers:
+  - {type: sample, pool: sleigh-hooves, level: 0.10, highpass: 300, lowpass: 11000, shelf_db: -4, per_clip: true, fallback: {type: sleigh}}
+  - {type: sample, pool: wind-pines, level: 0.10, gain_db: -18, highpass: 200, lowpass: 3000, per_clip: true, fade: 6.0, fallback: {type: wind, strength: 0.5, gain_db: -16}}

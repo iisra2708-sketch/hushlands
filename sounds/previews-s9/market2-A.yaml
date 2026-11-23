@@ -1,0 +1,6 @@
+target_rms_db: -31
+layers:
+  - {type: sample, pool: fire, level: 0.10, highpass: 120, lowpass: 7000, crest_cap: 4, fallback: {type: fire, gain_db: -10}}
+  - {type: thunderseq, pool: church-bells, level: 0.003, highpass: 200, lowpass: 5000, gap: [100, 200], fallback: {type: bells, freq: 247, distance: 0.75, every: 270, gain_db: -17}}
+  - {type: thunderseq, pool: snow-footsteps, level: 0.002, highpass: 150, lowpass: 7000, gap: [45, 110], fallback: {type: steps, every: 140, gain_db: -5}}
+  - {type: snow, rate: 1.0, gain_db: -12}

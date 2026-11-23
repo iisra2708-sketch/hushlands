@@ -1,0 +1,4 @@
+target_rms_db: -31
+layers:
+  - {type: pad, gain_db: 0}
+  - {type: sample, pool: wind-pines, level: 0.10, gain_db: -14, highpass: 200, lowpass: 2500, per_clip: true, fade: 6.0, fallback: {type: wind, strength: 0.4, gain_db: -16}}
