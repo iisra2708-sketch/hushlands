@@ -132,5 +132,5 @@ sounds:
     prompt: "A quiet city at night during snowfall heard through an open apartment window high above the street, very distant soft muffled traffic hush, a faraway car passing slowly on wet snow now and then, calm, no sirens, no horns, no voices, no music"
   - id: waves-cliff
     phase: 3
-    count: 2
+    count: 3
     prompt: "Ocean waves rolling in and breaking on rocks at the foot of a tall sea cliff, heard from the clifftop in open air, steady soft surf with gentle crashes and the hiss of receding foam, no deep sub-bass rumble, no wind howl, no voices, no music"
