@@ -153,3 +153,25 @@ sounds:
     loop: false
     influence: 0.5
     prompt: "Distant frozen lake ice singing on a still arctic night, soft deep twangs and gentle pinging echoes travelling across the ice, sparse and slow, no wind, no music, no voices"
+  # s9c (23 nov): sonidos "con sentido" para mercado abierto, vagón antiguo y Nochevieja con fuegos lejanos
+  - id: market-crowd
+    phase: 5
+    count: 2
+    prompt: "Distant gentle murmur of a small crowd at an outdoor Christmas market at dusk, soft indistinct voices far away with no clear words, occasional faint laughter, footsteps on snow, calm and cozy, no music, no announcements"
+  - id: mug-clink
+    phase: 5
+    count: 2
+    duration: 15
+    loop: false
+    prompt: "Two ceramic mugs of mulled wine gently clinking together at a wooden market stall, a soft cheerful toast, then quiet, outdoors in winter, no voices, no music"
+  - id: carriage-night
+    phase: 5
+    count: 3
+    prompt: "Inside an old wooden railway carriage travelling slowly at night, soft steady warm rumble of the moving train, gentle muffled rhythmic clatter of the wheels, occasional soft creak of the wooden panels, calm and even, warm mid-range, no deep sub-bass, no horn, no voices, no music"
+  - id: fireworks-distant
+    phase: 5
+    count: 2
+    duration: 20
+    loop: false
+    influence: 0.5
+    prompt: "Very distant muffled fireworks bursting far away over a city at midnight, heard through a closed apartment window, soft dull pops and gentle low rumbles that fade out, no whistles, no close crackling, no voices, no music"
