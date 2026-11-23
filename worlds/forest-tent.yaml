@@ -11,10 +11,11 @@ thumb_lines: [RAIN ON TENT, deep forest, rain • distant thunder]
 tags: [rain on tent, camping rain sounds, forest rain, rain sounds for sleeping, tent rain]
 hashtags: [rainontent, camping, rainsounds]
 image_prompt: "View from inside a small camping tent at night, glowing lantern, sleeping bag, tent flap open to a dark rainy pine forest, raindrops on the canvas, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -30
 audio:
-  - {type: rain, surface: tent, intensity: 0.7}
-  - {type: rain, surface: leaves, intensity: 0.5, gain_db: -9}
-  - {type: thunder, per_minute: 0.4, distance: 0.95, gain_db: -4}
+  - {type: sample, pool: rain-tent, level: 0.10, highpass: 150, lowpass: 9500, shelf_db: -3, notch: [[1007, 10]], per_clip: true, fallback: {type: rain, surface: tent, intensity: 0.7}}
+  - {type: sample, pool: rain-leaves, level: 0.10, gain_db: -9, highpass: 500, lowpass: 10000, shelf_db: -4, per_clip: true, fallback: {type: rain, surface: leaves, intensity: 0.5, gain_db: -9}}
+  - {type: thunderseq, pool: thunder-distant, level: 0.03, gap: [90, 240], fallback: {type: thunder, per_minute: 0.4, distance: 0.95, gain_db: -14}}
 visual:
   rain: {density: 300, angle: 4, opacity: 0.7}
   glow: [{x: 0.5, y: 0.75, radius: 0.15, color: [255, 190, 100], strength: 0.3}]

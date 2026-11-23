@@ -7,16 +7,16 @@ hook: Gingerbread is cooling on the table and a pot of spiced cider simmers on t
 sounds:
   - Wood stove crackling
   - Spiced cider gently simmering in a pot
-  - Quiet winter wind against the cottage
+  - Snow falling softly past the window
 thumb_lines: [CHRISTMAS KITCHEN, cottage at night, stove • simmering]
 tags: [christmas kitchen ambience, cozy kitchen ambience, christmas ambience, wood stove sounds, cozy winter ambience, christmas baking ambience, christmas sleep sounds]
 hashtags: [cozykitchen, christmasambience, cozywinter]
 image_prompt: "Cozy rustic cottage kitchen at night at Christmas, old cast iron wood stove with a small copper pot gently steaming, gingerbread cookies cooling on a wooden table, dried orange slices and pine garland, warm candlelight, small window showing a snowy garden and falling snow, painterly cinematic digital illustration, warm and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -29.5
 audio:
-  - {type: fire, gain_db: -3}
-  - {type: brook, base: [300, 1200], base_gain: 0.08, bubble: [120, 320], bubble_rate: 14, bubble_gain: 0.2, gain_db: 5}
-  - {type: wind, strength: 0.3, gain_db: -13}
-  - {type: noise, color: brown, lowpass: 200, gain_db: -16}
+  - {type: sample, pool: fire, level: 0.10, highpass: 120, lowpass: 9000, crest_cap: 4, fallback: {type: fire}}
+  - {type: sample, pool: simmering-pot, level: 0.10, gain_db: -6, highpass: 180, lowpass: 8000, per_clip: true, fallback: {type: brook, gain_db: -6}}
+  - {type: snow, rate: 1.0, gain_db: -12}
 visual:
   twinkle: {count: 40, size: 6, strength: 0.5}
   snow: {density: 300, region: [0.73, 0.12, 0.91, 0.46]}

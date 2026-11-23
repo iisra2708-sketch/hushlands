@@ -4,15 +4,14 @@ primary: Flowing Water Sounds
 hours: 3
 hook: A clear mountain stream tumbles over smooth stones beneath the pines as the last light fades. Breathe in the cool air and let the water carry your thoughts away.
 sounds:
-  - Flowing mountain stream over stones
-  - Light breeze through the pines
+  - Flowing mountain stream over smooth stones
 thumb_lines: [MOUNTAIN STREAM, dusk in the pines, flowing water]
 tags: [stream sounds, river sounds, water sounds for sleeping, nature sounds, forest stream]
 hashtags: [naturesounds, streamsounds, relaxing]
 image_prompt: "Mountain stream flowing over mossy stones in a pine forest at dusk, soft fog, warm last light through the trees, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -30
 audio:
-  - {type: brook}
-  - {type: wind, strength: 0.3, gain_db: -12}
+  - {type: sample, pool: stream-stones, level: 0.10, highpass: 200, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: brook}}
 visual:
   glow: [{x: 0.6, y: 0.3, radius: 0.2, color: [255, 190, 130], strength: 0.12}]
   breathe: 0.03
