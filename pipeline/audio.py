@@ -886,7 +886,10 @@ def render_audio(spec: AudioSpec, out_path: str, bitrate: str = "160k", log=prin
         # peak safety before AAC: crackles/thunder must not overshoot 0 dBFS after encoding. Two stages (-5 dBFS):
         # a 1 ms look-ahead catches the bulk, a 0.3 ms one the fastest pops (a single 3 ms stage let fire pops through
         # at -0.5 dBFS and AAC then overshot to +3.4 dBFS)
-        "-af", "alimiter=limit=0.56:attack=1:release=60:level=0,alimiter=limit=0.56:attack=0.3:release=30:level=0",
+        # s9: limiter on a 4x oversampled signal (true-peak): without it, fire pops/chimes came out at -5 dBFS sample peak
+        # but up to +0.6 dBTP after AAC; oversampled it stays around -3.5 dBTP with the same loudness
+        "-af", f"aresample={SR * 4},alimiter=limit=0.56:attack=1:release=60:level=0,"
+               f"alimiter=limit=0.56:attack=0.3:release=30:level=0,aresample={SR}",
         "-c:a", "aac", "-b:a", bitrate, out_path,
     ]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
