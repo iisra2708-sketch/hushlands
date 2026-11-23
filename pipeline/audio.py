@@ -856,6 +856,9 @@ def build_layers(spec: AudioSpec):
     return out
 
 
+_RARE = {"ThunderSeq", "Bells", "Chimes", "Whistle", "Steps"}
+
+
 def stream_audio(spec: AudioSpec):
     """Yield float32 (n, 2) interleaved chunks."""
     layers = build_layers(spec)
@@ -866,9 +869,13 @@ def stream_audio(spec: AudioSpec):
     while pos < total:
         n = min(n_chunk, total - pos)
         t = (pos + np.arange(n)) / SR
-        mix = sum(l(n, t) for l in layers)
+        outs = [l(n, t) for l in layers]
+        mix = sum(outs)
         if gain is None:  # calibrate loudness on the first chunk (roughly K-weighted)
-            meas = signal.sosfilt(_KW, mix, axis=-1)
+            # s9: rare events (thunder, bells, steps, whistle, chimes) are left out of the calibration, otherwise
+            # the whole video came out 3-5 dB quieter or louder depending on whether one fell in the first chunk
+            bed = [o for o, l in zip(outs, layers) if type(l).__name__ not in _RARE]
+            meas = signal.sosfilt(_KW, sum(bed) if bed else mix, axis=-1)
             rms = np.sqrt(np.mean(meas**2)) + 1e-12
             gain = db(spec.target_rms_db) / rms
         y = mix * gain

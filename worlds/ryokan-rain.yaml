@@ -10,9 +10,10 @@ thumb_lines: [RYOKAN RAIN, japanese garden, rain • trickling water]
 tags: [japanese rain, ryokan ambience, rain sounds, zen garden, japan ambience]
 hashtags: [japanambience, rainsounds, zen]
 image_prompt: "Traditional Japanese ryokan tatami room at night with shoji doors open to a moss garden, stone lantern glowing, gentle rain falling, small stream, painterly cinematic digital illustration, moody and cozy, soft volumetric light, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -30
 audio:
-  - {type: rain, surface: leaves, intensity: 0.5}
-  - {type: brook, gain_db: -9}
+  - {type: sample, pool: rain-leaves, level: 0.10, gain_db: -3, highpass: 500, lowpass: 10000, shelf_db: -4, per_clip: true, fallback: {type: rain, surface: leaves, intensity: 0.5}}
+  - {type: sample, pool: stream-stones, level: 0.10, highpass: 200, lowpass: 10000, shelf_db: -3, per_clip: true, fallback: {type: brook, gain_db: -9}}
 visual:
   rain: {density: 220, angle: 3, opacity: 0.6}
   glow: [{x: 0.65, y: 0.6, radius: 0.1, color: [255, 200, 120], strength: 0.3}]

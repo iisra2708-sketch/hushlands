@@ -78,7 +78,10 @@ class SampleLayer(Layer):
         self.level = float(self.p.get("level", 0.1))  # K-weighted rms of the layer (synth rain ~0.2, fire ~0.09)
         cap = float(self.p.get("crest_cap", 12.0))  # max peak/level ratio (12 = 21.6 dB): keeps crackles from clipping
         raw = []
-        for f in sorted(SOUNDS.glob(f"{pool}-*.mp3")):
+        files = sorted(SOUNDS.glob(f"{pool}-*.mp3"))
+        if self.p.get("clips"):  # 1-based subset of the pool, e.g. clips: [2]
+            files = [files[i - 1] for i in self.p["clips"] if 0 < i <= len(files)]
+        for f in files:
             x = _decode(f)
             if x.shape[1] < 2 * self.fade + SR:  # too short to crossfade: tile it
                 x = np.tile(x, (1, int(np.ceil((2 * self.fade + SR) / x.shape[1]))))
@@ -115,10 +118,14 @@ class SampleLayer(Layer):
             k = (k + 1 + int(rng.integers(0, n - 1))) % n
         self.last = k
         c = self.clips[k]
+        if self.p.get("whole", False):
+            # rhythmic seamless loops (train wheels): play the clip whole, no tempo change -> steady rhythm
+            return c
         length = min(int(rng.uniform(12, 28) * SR), c.shape[1])
         start = int(rng.integers(0, c.shape[1] - length + 1))
         seg = c[:, start:start + length]
-        rate = rng.uniform(0.97, 1.03)
+        j = float(self.p.get("jitter", 0.03))
+        rate = rng.uniform(1 - j, 1 + j)
         if abs(rate - 1) > 1e-3:
             seg = signal.resample_poly(seg, 1000, int(round(1000 * rate)), axis=1)
         return seg * db(rng.uniform(-1.2, 1.2))

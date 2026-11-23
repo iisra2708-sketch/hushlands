@@ -1,6 +1,6 @@
 order: 9
 title: Sleigh Ride Through a Snowy Forest
-primary: Sleigh Bells, Hooves in Snow & Winter Wind
+primary: Sleigh Bells & Hooves in Snow
 hours: 3
 season: christmas
 hook: Wrapped in a wool blanket, you glide through a silent pine forest at night. The horse knows the way home. Bells jingle softly with every step, the runners hiss across the snow, and stars appear between the trees.
@@ -8,14 +8,15 @@ sounds:
   - Sleigh bells jingling with each step
   - Hooves falling softly in deep snow
   - Runners hissing over the snow
-  - Cold wind through the pines
+  - A faint breeze through the pines
 thumb_lines: [SLEIGH RIDE, snowy forest, sleigh bells • snow]
 tags: [sleigh bells, sleigh ride ambience, snowy forest ambience, winter ambience, christmas ambience, horse sleigh sounds, christmas sleep sounds]
 hashtags: [sleighbells, winterambience, christmasambience]
 image_prompt: "View from a horse-drawn wooden sleigh at night gliding through a snowy pine forest, warm lantern hanging on the sleigh, wool blanket in the foreground, snow-covered fir trees, gently falling snow, starry sky between the trees, painterly cinematic digital illustration, magical and peaceful, soft moonlight, rich detail, wide 16:9 composition, no people, no text, no logos"
+target_rms_db: -30.6
 audio:
-  - {type: sleigh, gain_db: 3}
-  - {type: wind, strength: 0.5, gain_db: -10}
+  - {type: sample, pool: sleigh-hooves, level: 0.10, highpass: 300, lowpass: 11000, shelf_db: -4, per_clip: true, fallback: {type: sleigh}}
+  - {type: sample, pool: wind-pines, level: 0.10, gain_db: -18, highpass: 200, lowpass: 3000, per_clip: true, fade: 6.0, fallback: {type: wind, strength: 0.5, gain_db: -16}}
 visual:
   snow: {density: 320}
   glow: [{x: 0.27, y: 0.2, radius: 0.08, color: [255, 180, 90], strength: 0.25}]
