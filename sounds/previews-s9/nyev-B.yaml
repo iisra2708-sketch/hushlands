@@ -1,0 +1,5 @@
+target_rms_db: -31
+layers:
+  - {type: tickseq, pool: wall-clock, period: 1.0, peak: 0.03, lowpass: 3500, fallback: {type: clock, period: 1.0, gain_db: -10}}
+  - {type: thunderseq, pool: fireworks-distant, level: 0.007, highpass: 60, lowpass: 2500, gap: [40, 100], fallback: {type: thunder, per_minute: 0.5, distance: 0.95, gain_db: -20}}
+  - {type: snow, rate: 1.2, gain_db: -10}

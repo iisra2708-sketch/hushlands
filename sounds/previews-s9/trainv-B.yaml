@@ -1,0 +1,5 @@
+target_rms_db: -30
+layers:
+  - {type: sample, pool: train-tracks, clips: [2], whole: true, level: 0.03, fade: 0.05, highpass: 120, lowpass: 5000, per_clip: true, fallback: {type: train, period: 1.1, gain_db: -13}}
+  - {type: sample, pool: carriage-night, level: 0.10, highpass: 40, lowpass: 300, crest_cap: 4, gain_db: -12, fade: 6.0, fallback: {type: drone, tones: [48, 96], gain_db: -20}}
+  - {type: thunderseq, pool: train-whistle, level: 0.02, highpass: 150, lowpass: 3000, gap: [180, 360], fallback: {type: whistle, freq: 392, every: 300, gain_db: -21}}
